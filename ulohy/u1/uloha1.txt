@@ -1,0 +1,31 @@
+mobilný eshop s elektronikou Platypus
+O čo ide
+
+Platypus je jednoduchá appka eshopu s elektronikou, niečo ako Alza v malom. Používateľ si v nej prezrie produkty, dá ich do košíka, objedná a vidí stav objednávky.
+
+Rieši to, že veľa ľudí nakupuje z mobilu a chce mať všetko na jednom mieste: tovar, košík aj prehľad objednávok, bez hľadania v mailoch.
+
+Pre koho
+
+Pre bežných ľudí, ktorí nakupujú elektroniku online cez mobil.
+
+Hlavné funkcie
+Zoznam produktov s kategóriami a vyhľadávaním
+Detail produktu (fotka, popis, cena)
+Košík a odoslanie objednávky
+Prehľad mojich objednávok a ich stav
+Obľúbené produkty
+
+Čo je na nej mobilné
+Poloha – pri objednávke appka zoradí výdajné miesta podľa vzdialenosti, takže si hneď vyberiem najbližšie.
+Notifikácie – keď sa zmení stav objednávky (napr. odoslaná).
+Offline režim – obľúbené produkty a objednávky sa uložia v telefóne, takže sa dajú pozrieť aj bez internetu.
+
+Architektúra
+Appka: Flutter (Android)
+Backend: Firebase
+Authentication – prihlásenie používateľa
+Firestore – produkty, objednávky, obľúbené
+Cloud Messaging – notifikácie
+
+Platby nebudú reálne, objednávka sa len uloží do databázy. Produkty si do Firestore nahrám ručne ako testovacie dáta.
