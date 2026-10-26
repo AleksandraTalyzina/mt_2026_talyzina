@@ -3,10 +3,10 @@ Navrhla som hlavný tok mojej appky z U1, čiže nákup produktu. Použila som A
 Figma: https://www.figma.com/design/J1talcADzIXH2BJfcPfyMg/Untitled?node-id=0-1&t=WsLBIUybcR2tqTgk-0
 
 Obrazovky:
-Vyhľadávanie
-Detail produktu 
-Košík
-Pokladňa 
+Vyhľadávanie,
+Detail produktu, 
+Košík,
+Pokladňa,
 Potvrdenie 
 
 
