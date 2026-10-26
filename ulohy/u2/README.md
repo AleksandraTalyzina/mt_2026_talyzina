@@ -1,14 +1,16 @@
-# U2 – Návrh obrazoviek (UI)
+Navrhla som hlavný tok mojej appky z U1, čiže nákup produktu. Použila som Apple HIG (iOS), návrh je pre iPhone 16.
 
-Navrhnite používateľské rozhranie svojho projektu z U1 v nástroji na návrh UI,
-napr. **Figma**, **Google Stitch** alebo **Penpot**.
+Figma: https://www.figma.com/design/J1talcADzIXH2BJfcPfyMg/Untitled?node-id=0-1&t=WsLBIUybcR2tqTgk-0
 
-Návrh by mal obsahovať:
+Obrazovky:
+Vyhľadávanie
+Detail produktu 
+Košík
+Pokladňa 
+Potvrdenie 
 
-- **4–5 kľúčových obrazoviek** aplikácie,
-- **tok medzi nimi** – ako sa používateľ pohybuje v aplikácii (ideálne klikateľný prototyp),
-- rešpektovanie zásad mobilného UI (**Material 3** alebo **Apple HIG**),
-- stručný popis, čo používateľ na jednotlivých obrazovkách robí,
-- popis, ako ste použili **LLM nástroje**.
 
-Formu si zvoľte sami – exporty obrazoviek, PDF, odkaz na návrh, popis … – všetko uložte do tohto priečinka.
+Držala som sa štandardných iOS prvkov: navigačná lišta, tab bar, search bar, segmented control, stepper, zoznamy so sekciami a fajka pri vybranej možnosti. Namiesto predvolenej modrej má appka vlastnú farbu.
+
+Použitie LLM
+Používala som Claude. Poradil mi, ako vo Figme nájsť komponenty z iOS kitu. Prvú obrazovku nad ostatnymi (detail produktu) som spravila sama a zvyšné vygeneroval Claude podľa nej. Obrazovky som potom naimportovala do Figmy a spravila prototyp.
