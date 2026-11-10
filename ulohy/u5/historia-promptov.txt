@@ -1,0 +1,1726 @@
+exp
+[Image #1]
+
+> <browser_instruction># Claude in Chrome browser automation
+
+  You have access to browser automation tools (mcp__claude-in-chrome__*) for
+  interacting with web pages in Chrome. Follow these guidelines for effective
+  browser automation.
+
+  ## Loading deferred tools
+
+  If the mcp__claude-in-chrome__* tools are deferred (must be loaded via
+  ToolSearch before use), load every tool you expect to need in ONE ToolSearch
+  call — the select query accepts a comma-separated list — never one call per
+  tool. Start with the core set:
+
+  ToolSearch with query
+  "select:mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__naviga
+  te,mcp__claude-in-chrome__computer,mcp__claude-in-chrome__read_page,mcp__clau
+  de-in-chrome__tabs_create_mcp,mcp__claude-in-chrome__tabs_close_mcp"
+
+  Add task-specific tools to the same call when the task obviously needs them:
+  read_console_messages / read_network_requests for debugging, form_input for
+  forms, gif_creator for recordings, javascript_tool for page scripting.
+
+  ## GIF recording
+
+  When performing multi-step browser interactions that the user may want to
+  review or share, use mcp__claude-in-chrome__gif_creator to record them.
+
+  You must ALWAYS:
+  * Capture extra frames before and after taking actions to ensure smooth
+  playback
+  * Name the file meaningfully to help the user identify it later (e.g.,
+  "login_process.gif")
+
+  ## Console log debugging
+
+  You can use mcp__claude-in-chrome__read_console_messages to read console
+  output. Console output may be verbose. If you are looking for specific log
+  entries, use the 'pattern' parameter with a regex-compatible pattern. This
+  filters results efficiently and avoids overwhelming output. For example, use
+  pattern: "[MyApp]" to filter for application-specific logs rather than
+  reading all console output.
+
+  ## Alerts and dialogs
+
+  IMPORTANT: Do not trigger JavaScript alerts, confirms, prompts, or browser
+  modal dialogs through your actions. These browser dialogs block all further
+  browser events and will prevent the extension from receiving any subsequent
+  commands. Instead, when possible, use console.log for debugging and then use
+  the mcp__claude-in-chrome__read_console_messages tool to read those log
+  messages. If a page has dialog-triggering elements:
+  1. Avoid clicking buttons or links that may trigger alerts (e.g., "Delete"
+  buttons with confirmation dialogs)
+  2. If you must interact with such elements, warn the user first that this may
+  interrupt the session
+  3. Use mcp__claude-in-chrome__javascript_tool to check for and dismiss any
+  existing dialogs before proceeding
+
+  If you accidentally trigger a dialog and lose responsiveness, inform the user
+  they need to manually dismiss it in the browser.
+
+  ## Avoid rabbit holes and loops
+
+  When using browser automation tools, stay focused on the specific task. If
+  you encounter any of the following, stop and ask the user for guidance:
+  - Unexpected complexity or tangential browser exploration
+  - Browser tool calls failing or returning errors after 2-3 attempts
+  - No response from the browser extension
+  - Page elements not responding to clicks or input
+  - Pages not loading or timing out
+  - Unable to complete the browser task despite multiple approaches
+
+  Explain what you attempted, what went wrong, and ask how the user would like
+  to proceed. Do not keep retrying the same failing browser action or explore
+  unrelated pages without checking in first.
+
+  ## Tab context and session startup
+
+  IMPORTANT: At the start of each browser automation session, call
+  mcp__claude-in-chrome__tabs_context_mcp first to get information about the
+  user's current browser tabs. Use this context to understand what the user
+  might want to work with before creating new tabs.
+
+  Never reuse tab IDs from a previous/other session. Follow these guidelines:
+  1. Only reuse an existing tab if the user explicitly asks to work with it
+  2. Otherwise, create a new tab with mcp__claude-in-chrome__tabs_create_mcp
+  3. If a tool returns an error indicating the tab doesn't exist or is invalid,
+  call tabs_context_mcp to get fresh tab IDs
+  4. When a tab is closed by the user or a navigation error occurs, call
+  tabs_context_mcp to see what tabs are available</browser_instruction>
+
+> is this task in my repository? if yes move to this folder
+
+● Bash(cd "c:/Users/prima/Documents/GitHub/mt_2026_talyzina" && git ls-files |
+      head -100 && echo "---" && find . -path ./.git -prune -o -type d -print |
+      head -50)
+  ⎿  (No output)
+
+● Bash(cd "c:/Users/prima/Documents/GitHub/mt_2026_talyzina" && find . -maxdepth
+      3 -not -path './.git*' -not -path './cvicenia/cv3/counter_journal/*' |
+      sort && echo "-…)
+  ⎿  Created grep.exe.stackdump (+31 -0)
+       1 +Stack trace:                                                   
+       2 +Frame         Function      Args                               
+       3 +0007FFFFBD70  0002100615D7 (0007FFFFBF78, 000000000002, 0000000
+         +00002, 0007FFFFDC10) msys-2.0.dll+0x215D7                      
+       4 +000000000000  0002100636D5 (000000000064, 000700000000, 0000000
+         +00178, 000000000000) msys-2.0.dll+0x236D5                      
+       5 +0007FFFFC480  0002100C3D2B (0007FFFFC6E0, 000000000001, 0000000
+         +00000, 0007FFFFC6E0) msys-2.0.dll+0x83D2B                      
+       6 +0000000000C1  0002100BF3BB (7FF9C3CEDB72, 000000000000, 0000000
+         +00000, 0002102C5DC0) msys-2.0.dll+0x7F3BB                      
+       7 +0007FFFFC848  0002100BF7C5 (000A00000698, 0007FFFFC848, 0000000
+         +000B5, 0000000000B5) msys-2.0.dll+0x7F7C5                      
+       8 +0007FFFFC848  00021021A948 (000000000000, 000000000000, 0002000
+         +00000, 000000000000) msys-2.0.dll+0x1DA948                     
+       9 +0007FFFFC848  00010042A1E5 (7FF9C64900F3, 0000034B774E, 0002100
+         +436E6, 000000000000) grep.exe+0x2A1E5                          
+      10 +0007FFFFCB80  000100404B7C (00000000001B, 000000000000, 0002101
+         +EB9F7, 000000000000) grep.exe+0x4B7C                           
+      11 +0007FFFFCB80  000100429678 (000000000000, 000000000000, 0000000
+         +00000, 000000000000) grep.exe+0x29678                          
+      12 +0007FFFFCD30  000210048142 (000000000000, 000000000000, 0000000
+         +00000, 000000000000) msys-2.0.dll+0x8142                       
+      13 +0007FFFFFFF0  000210045C86 (000000000000, 000000000000, 0000000
+         +00000, 000000000000) msys-2.0.dll+0x5C86                       
+      14 +0007FFFFFFF0  000210045D34 (000000000000, 000000000000, 0000000
+         +00000, 000000000000) msys-2.0.dll+0x5D34                       
+      15 +End of stack trace                                             
+      16 +Loaded modules:                                                
+      17 +000100400000 grep.exe                                          
+      18 +7FF9C6450000 ntdll.dll                                         
+      19 +7FF9C6280000 KERNEL32.DLL                                      
+      20 +7FF9C3CC0000 KERNELBASE.dll                                    
+      21 +0005603F0000 msys-iconv-2.dll                                  
+      22 +000430B30000 msys-intl-8.dll                                   
+      23 +000210040000 msys-2.0.dll                                      
+      24 +0004C36D0000 msys-pcre-1.dll                                   
+      25 +7FF9C6350000 advapi32.dll                                      
+      26 +7FF9C4B90000 msvcrt.dll                                        
+      27 +7FF9C5990000 sechost.dll                                       
+      28 +7FF9C6090000 RPCRT4.dll                                        
+      29 +7FF9C3B90000 bcrypt.dll                                        
+      30 +7FF9C3400000 CRYPTBASE.DLL                                     
+      31 +7FF9C4240000 bcryptPrimitives.dll                              
+
+● Bash(cd "c:/Users/prima/Documents/GitHub/mt_2026_talyzina" && echo "--- cv6
+      ---" && ls -la cvicenia/cv6 && echo "--- README ---" && cat README.md &&
+      echo "--- ulohy…)
+  ⎿  (No output)
+
+● Bash(cd "c:/Users/prima/Documents/GitHub/mt_2026_talyzina" && cat
+      ulohy/u3/popis.md && echo "=== main.dart ===" && cat ulohy/u3/main.dart &&
+      echo "=== git log u3 ===…)
+  ⎿  (No output)
+
+● The task files are already in ulohy/u3/, and the only empty folder is
+  cvicenia/cv6/, but moving them would take the U3 assignment out of the folder
+  the teacher expects. Before I touch anything, please confirm that you do want
+  cv6 used.
+
+● User answered Claude's questions:
+  ⎿  · ulohy/u3 holds your graded U3 submission. How should I put it into
+     cvicenia/cv6? → Copy (Recommended)
+
+● Bash(cd "c:/Users/prima/Documents/GitHub/mt_2026_talyzina" && cp
+      ulohy/u3/main.dart ulohy/u3/popis.md ulohy/u3/0*.png cvicenia/cv6/ && ls
+      -la cvicenia/cv6 && git sta…)
+  ⎿  Created cvicenia\cv6\main.dart (+247 -0)
+        1 +import 'package:flutter/material.dart';                       
+        2 +                                                              
+        3 +void main() => runApp(const MyApp());                         
+        4 +                                                              
+        5 +const String appTitle = 'Flutter layout demo';                
+        6 +                                                              
+        7 +class Place {                                                 
+        8 +  const Place({                                               
+        9 +    required this.name,                                       
+       10 +    required this.location,                                   
+       11 +    required this.image,                                      
+       12 +    required this.description,                                
+       13 +  });                                                         
+       14 +                                                              
+       15 +  final String name;                                          
+       16 +  final String location;                                      
+       17 +  final String image;                                         
+       18 +  final String description;                                   
+       19 +}                                                             
+       20 +                                                              
+       21 +const Place oeschinenLake = Place(                            
+       22 +  name: 'Oeschinen Lake Campground',                          
+       23 +  location: 'Kandersteg, Switzerland',                        
+       24 +  image: 'images/lake.jpg',                                   
+       25 +  description:                                                
+       26 +      'Lake Oeschinen lies at the foot of the Blüemlisalp in '
+       27 +      'the Bernese Alps. Situated 1,578 meters above sea '    
+       28 +      'level, it is one of the larger Alpine Lakes. A gondola 
+          +'                                                             
+       29 +      'ride from Kandersteg, followed by a half-hour walk '   
+       30 +      'through pastures and pine forest, leads you to the '   
+       31 +      'lake, which warms to 20 degrees Celsius in the summer. 
+          +'                                                             
+       32 +      'Activities enjoyed here include rowing, and riding the 
+          +'                                                             
+       33 +      'summer toboggan run.',                                 
+       34 +);                                                            
+       35 +                                                              
+       36 +class MyApp extends StatelessWidget {                         
+       37 +  const MyApp({super.key});                                   
+       38 +  @override                                                   
+       39 +  Widget build(BuildContext context) {                        
+       40 +    return MaterialApp(                                       
+     … 207 more lines (ctrl+o to expand)
+  ⎿  Created cvicenia\cv6\popis.md (+37 -0)
+       1 +# U3 – Implementácia obrazovky podľa návodu                    
+       2 +                                                               
+       3 +Obrazovka podľa tutoriálu *Build a Flutter layout* s úpravami z
+         + cvičenia 4.                                                   
+       4 +                                                               
+       5 +## Súbory                                                      
+       6 +                                                               
+       7 +| Súbor | Obsah |                                              
+       8 +|---|---|                                                      
+       9 +| `main.dart` | celá implementácia (`lib/main.dart`) |         
+      10 +| `01-telefon-svetly.png` | telefón, svetlý režim |            
+      11 +| `02-telefon-tmavy.png` | telefón, tmavý režim |              
+      12 +| `03-na-sirku.png` | široká obrazovka – obrázok vľavo, text vp
+         +ravo |                                                         
+      13 +| `04-interakcia.png` | po ťuknutí na hviezdičku (41 → 40) a na
+         + SHARE (SnackBar) |                                            
+      14 +                                                               
+      15 +Obrázok je v projekte ako `images/lake.jpg` a je zaregistrovaný
+         + v `pubspec.yaml`.                                             
+      16 +                                                               
+      17 +## Splnené časti                                               
+      18 +                                                               
+      19 +- **Obrazovka z návodu** – `ImageSection`, `TitleSection`, `But
+         +tonSection` + `ButtonWithText`, `TextSection`.                 
+      20 +- **Material 3** – téma z `ColorScheme.fromSeed(seedColor: Colo
+         +rs.teal)`, `darkTheme` a `themeMode: ThemeMode.system`.        
+      21 +  Farby (`primary`, `onSurfaceVariant`) aj písmo (`titleMedium`
+         +, `bodyMedium`) sa berú z témy, medzi textami je `spacing: 8`. 
+      22 +- **FavoriteWidget** – `StatefulWidget` s `IconButton`, ťuknuti
+         +e prepne hviezdičku a zmení počet.                             
+      23 +                                                               
+      24 +## Rozšírenia (krok 9)                                         
+      25 +                                                               
+      26 +1. **Tlačidlá s akciou** – `ButtonWithText` je zabalený v `InkW
+         +ell`, po ťuknutí sa zobrazí `SnackBar`.                        
+      27 +2. **Model** – trieda `Place` (názov, lokalita, obrázok, popis)
+         + a widget `PlaceDetailPage(place: …)`.                         
+      28 +3. **Na šírku** – `LayoutBuilder` v `PlaceDetailPage`: pri šírk
+         +e ≥ 600 je obrázok vľavo a text vpravo v `Row`, inak pôvodný st
+         +ĺpec.                                                          
+      29 +                                                               
+      30 +## Použitie LLM                                                
+      31 +                                                               
+      32 +Použitý nástroj: **Claude Code** (Anthropic) ako asistent priam
+         +o vo VS Code.                                                  
+      33 +                                                               
+      34 +- **Prostredie** – pomoc s opravou `flutter doctor`: doinštalov
+         +anie C++ komponentov Visual Studia, Android SDK a emulátora.   
+      35 +- **Kroky 1–5** – kód zo slajdov sa vkladal ručne. LLM opravova
+         +l chyby po vložení (zátvorky, formátovanie), doplnil chýbajúcu 
+         +triedu `ButtonWithText`, stiahol `lake.jpg` a zaregistroval ho 
+         +v `pubspec.yaml`.                                              
+      36 +- **Kroky 6, 7 a 9** – na požiadanie ich podľa slajdov implemen
+         +toval LLM. Rozšírenia vybral tak, aby fungovali s jednou fotkou
+         +.                                                              
+      37 +- **Kontrola** – `flutter analyze` bez chýb, 5 widget testov (o
+         +bsah, hviezdička, SnackBar, úzke a široké rozloženie) a screens
+         +hoty z prehliadača.                                            
+  ⎿  … 4 more files changed
+
+● Bash(cd "c:/Users/prima/Documents/GitHub/mt_2026_talyzina" && ls -la
+      grep.exe.stackdump && rm grep.exe.stackdump && git status --short)
+  ⎿  Deleted grep.exe.stackdump (+0 -31)
+       1 -Stack trace:                                                   
+       2 -Frame         Function      Args                               
+       3 -0007FFFFBD70  0002100615D7 (0007FFFFBF78, 000000000002, 0000000
+         -00002, 0007FFFFDC10) msys-2.0.dll+0x215D7                      
+       4 -000000000000  0002100636D5 (000000000064, 000700000000, 0000000
+         -00178, 000000000000) msys-2.0.dll+0x236D5                      
+       5 -0007FFFFC480  0002100C3D2B (0007FFFFC6E0, 000000000001, 0000000
+         -00000, 0007FFFFC6E0) msys-2.0.dll+0x83D2B                      
+       6 -0000000000C1  0002100BF3BB (7FF9C3CEDB72, 000000000000, 0000000
+         -00000, 0002102C5DC0) msys-2.0.dll+0x7F3BB                      
+       7 -0007FFFFC848  0002100BF7C5 (000A00000698, 0007FFFFC848, 0000000
+         -000B5, 0000000000B5) msys-2.0.dll+0x7F7C5                      
+       8 -0007FFFFC848  00021021A948 (000000000000, 000000000000, 0002000
+         -00000, 000000000000) msys-2.0.dll+0x1DA948                     
+       9 -0007FFFFC848  00010042A1E5 (7FF9C64900F3, 0000034B774E, 0002100
+         -436E6, 000000000000) grep.exe+0x2A1E5                          
+      10 -0007FFFFCB80  000100404B7C (00000000001B, 000000000000, 0002101
+         -EB9F7, 000000000000) grep.exe+0x4B7C                           
+      11 -0007FFFFCB80  000100429678 (000000000000, 000000000000, 0000000
+         -00000, 000000000000) grep.exe+0x29678                          
+      12 -0007FFFFCD30  000210048142 (000000000000, 000000000000, 0000000
+         -00000, 000000000000) msys-2.0.dll+0x8142                       
+      13 -0007FFFFFFF0  000210045C86 (000000000000, 000000000000, 0000000
+         -00000, 000000000000) msys-2.0.dll+0x5C86                       
+      14 -0007FFFFFFF0  000210045D34 (000000000000, 000000000000, 0000000
+         -00000, 000000000000) msys-2.0.dll+0x5D34                       
+      15 -End of stack trace                                             
+      16 -Loaded modules:                                                
+      17 -000100400000 grep.exe                                          
+      18 -7FF9C6450000 ntdll.dll                                         
+      19 -7FF9C6280000 KERNEL32.DLL                                      
+      20 -7FF9C3CC0000 KERNELBASE.dll                                    
+      21 -0005603F0000 msys-iconv-2.dll                                  
+      22 -000430B30000 msys-intl-8.dll                                   
+      23 -000210040000 msys-2.0.dll                                      
+      24 -0004C36D0000 msys-pcre-1.dll                                   
+      25 -7FF9C6350000 advapi32.dll                                      
+      26 -7FF9C4B90000 msvcrt.dll                                        
+      27 -7FF9C5990000 sechost.dll                                       
+      28 -7FF9C6090000 RPCRT4.dll                                        
+      29 -7FF9C3B90000 bcrypt.dll                                        
+      30 -7FF9C3400000 CRYPTBASE.DLL                                     
+      31 -7FF9C4240000 bcryptPrimitives.dll                              
+
+● Yes, the task was already in your repo, in ulohy/u3/. I copied it into
+  cvicenia/cv6/, and ulohy/u3/ is unchanged.
+
+  What's in cvicenia/cv6/ now:
+  - main.dart (cvicenia/cv6/main.dart): the whole app
+  - popis.md (cvicenia/cv6/popis.md): the description, still headed "U3", so
+    rename it if this becomes a cv6 write-up
+  - the 4 screenshots (01-telefon-svetly.png … 04-interakcia.png)
+
+  Things to know:
+  - It won't run on its own. The repo only has main.dart, not the Flutter
+    project around it. The code loads images/lake.jpg, which has to be in the
+    project and listed in pubspec.yaml. To run it in cv6, create a project with
+    flutter create, replace its lib/main.dart with this file, and add the image
+    the same way you did for U3.
+  - Nothing is committed yet. The new files are untracked.
+  - Leftover file removed. One of my searches crashed and left a
+    grep.exe.stackdump file in the repo root, so I deleted it.
+
+> wait, actually has to be the task 4, with recipe details
+
+● Bash(cd "c:/Users/prima/Documents/GitHub/mt_2026_talyzina" && rm
+      cvicenia/cv6/main.dart cvicenia/cv6/popis.md cvicenia/cv6/0*.png && cp
+      ulohy/u4/* cvicenia/cv6/ && l…)
+  ⎿  Deleted cvicenia\cv6\popis.md (+0 -37)
+       1 -# U3 – Implementácia obrazovky podľa návodu                    
+       2 -                                                               
+       3 -Obrazovka podľa tutoriálu *Build a Flutter layout* s úpravami z
+         - cvičenia 4.                                                   
+       4 -                                                               
+       5 -## Súbory                                                      
+       6 -                                                               
+       7 -| Súbor | Obsah |                                              
+       8 -|---|---|                                                      
+       9 -| `main.dart` | celá implementácia (`lib/main.dart`) |         
+      10 -| `01-telefon-svetly.png` | telefón, svetlý režim |            
+      11 -| `02-telefon-tmavy.png` | telefón, tmavý režim |              
+      12 -| `03-na-sirku.png` | široká obrazovka – obrázok vľavo, text vp
+         -ravo |                                                         
+      13 -| `04-interakcia.png` | po ťuknutí na hviezdičku (41 → 40) a na
+         - SHARE (SnackBar) |                                            
+      14 -                                                               
+      15 -Obrázok je v projekte ako `images/lake.jpg` a je zaregistrovaný
+         - v `pubspec.yaml`.                                             
+      16 -                                                               
+      17 -## Splnené časti                                               
+      18 -                                                               
+      19 -- **Obrazovka z návodu** – `ImageSection`, `TitleSection`, `But
+         -tonSection` + `ButtonWithText`, `TextSection`.                 
+      20 -- **Material 3** – téma z `ColorScheme.fromSeed(seedColor: Colo
+         -rs.teal)`, `darkTheme` a `themeMode: ThemeMode.system`.        
+      21 -  Farby (`primary`, `onSurfaceVariant`) aj písmo (`titleMedium`
+         -, `bodyMedium`) sa berú z témy, medzi textami je `spacing: 8`. 
+      22 -- **FavoriteWidget** – `StatefulWidget` s `IconButton`, ťuknuti
+         -e prepne hviezdičku a zmení počet.                             
+      23 -                                                               
+      24 -## Rozšírenia (krok 9)                                         
+      25 -                                                               
+      26 -1. **Tlačidlá s akciou** – `ButtonWithText` je zabalený v `InkW
+         -ell`, po ťuknutí sa zobrazí `SnackBar`.                        
+      27 -2. **Model** – trieda `Place` (názov, lokalita, obrázok, popis)
+         - a widget `PlaceDetailPage(place: …)`.                         
+      28 -3. **Na šírku** – `LayoutBuilder` v `PlaceDetailPage`: pri šírk
+         -e ≥ 600 je obrázok vľavo a text vpravo v `Row`, inak pôvodný st
+         -ĺpec.                                                          
+      29 -                                                               
+      30 -## Použitie LLM                                                
+      31 -                                                               
+      32 -Použitý nástroj: **Claude Code** (Anthropic) ako asistent priam
+         -o vo VS Code.                                                  
+      33 -                                                               
+      34 -- **Prostredie** – pomoc s opravou `flutter doctor`: doinštalov
+         -anie C++ komponentov Visual Studia, Android SDK a emulátora.   
+      35 -- **Kroky 1–5** – kód zo slajdov sa vkladal ručne. LLM opravova
+         -l chyby po vložení (zátvorky, formátovanie), doplnil chýbajúcu 
+         -triedu `ButtonWithText`, stiahol `lake.jpg` a zaregistroval ho 
+         -v `pubspec.yaml`.                                              
+      36 -- **Kroky 6, 7 a 9** – na požiadanie ich podľa slajdov implemen
+         -toval LLM. Rozšírenia vybral tak, aby fungovali s jednou fotkou
+         -.                                                              
+      37 -- **Kontrola** – `flutter analyze` bez chýb, 5 widget testov (o
+         -bsah, hviezdička, SnackBar, úzke a široké rozloženie) a screens
+         -hoty z prehliadača.                                            
+  ⎿  … 14 more files changed
+
+● I swapped it: cvicenia/cv6/ now has the recipe app from Task 4 (Pasta
+  Carbonara) instead of the lake app. As before, I copied rather than moved, so
+  ulohy/u4/ still has your U4 submission.
+
+  What's in cvicenia/cv6/ now:
+  - main.dart (cvicenia/cv6/main.dart): the recipe app
+  - the 8 screenshots (Screenshot 2026-11-03 …png)
+  - 2026-11-03-105424-pastedcontent-id50a5.txt, the saved chat log. It's in
+    there because it was in u4. Delete it if you only want the code and
+    screenshots in cv6.
+
+  I removed all the Task 3 files from cv6. Task 3 itself is untouched in
+  ulohy/u3/.
+
+  This code doesn't load any image files (the "photo" is drawn from colours), so
+  you can paste it into any Flutter project's lib/main.dart and run it.
+
+  Nothing is committed yet; cvicenia/cv6/ shows up as untracked.
+
+[Image #2]
+
+> inspect the task and give me step by step idea on how to implement this
+  (group 1)
+
+● Bash(cd "C:/Users/prima/Documents/GitHub/mt_2026_talyzina" && cat -n
+      ulohy/u4/main.dart && ls ulohy && git remote -v)
+  ⎿  (No output)
+
+● Your U4 recipe app already has most of what U5 needs. The work is mainly
+  adding state and wiring it up. Here's a plan based on ulohy/u4/main.dart.
+
+  The key decision: where each piece of state lives
+
+  ┌────────────────────┬──────────────────────┬─────────────────────────────┐
+  │       State        │    Where it lives    │             Why             │
+  ├────────────────────┼──────────────────────┼─────────────────────────────┤
+  │                    │ FavoriteButton       │ No other widget uses it, so │
+  │ Favourite (heart)  │ itself               │  it stays as low as         │
+  │                    │                      │ possible                    │
+  ├────────────────────┼──────────────────────┼─────────────────────────────┤
+  │                    │ RecipeDetailPage     │ The stepper and the         │
+  │ Servings           │ (the parent)         │ ingredient amounts both     │
+  │                    │                      │ need it                     │
+  ├────────────────────┼──────────────────────┼─────────────────────────────┤
+  │ Checked            │                      │ Used by the lists, the      │
+  │ ingredients and    │ RecipeDetailPage     │ progress counter and the    │
+  │ done steps         │                      │ cooking mode result         │
+  ├────────────────────┼──────────────────────┼─────────────────────────────┤
+  │ Current step in    │ CookingPage          │ Only that page uses it      │
+  │ cooking mode       │                      │                             │
+  └────────────────────┴──────────────────────┴─────────────────────────────┘
+
+  These are calculated, not stored in state: the scaled amounts, the "3 / 8"
+  progress, step numbers and the button label. Your recipe has exactly 3 + 5 = 8
+  steps, which matches the "3 / 8" on the slide.
+
+  Steps
+
+  1. Change the data model
+  - Split Ingredient.amount into double? quantity and String unit. For "to
+    taste", set quantity to null.
+  - Add baseServings: 4 to Recipe.
+  - Add a getter that lists all steps in order: List<String> get allSteps =>
+    [for (final s in method) ...s.steps];
+  - Add a helper that returns the amount for a given number of servings:
+    quantity * servings / baseServings.
+
+  2. Turn RecipeDetailPage into a StatefulWidget
+  late int _servings = widget.recipe.baseServings;
+  final Set<int> _checkedIngredients = {};
+  final Set<int> _doneSteps = {};   // step numbers counted across the whole
+  recipe, 0–7
+  Every change goes through setState in this class. Child widgets only receive
+  the values and a callback.
+
+  3. Favourite heart (the easiest part)
+  Write a FavoriteButton StatefulWidget with bool _isFavorite and an IconButton
+  that switches between favorite and favorite_border. Put it in
+  SliverAppBar.large(actions: [...]). It works the same way as FavoriteWidget in
+  your U3.
+
+  4. Servings stepper "− 4 +" (your controlled input)
+  Make ServingsStepper(value: _servings, onChanged: (v) => setState(() =>
+  _servings = v)) a StatelessWidget. It doesn't keep its own value, which is
+  what makes it a controlled input. Disable "−" at 1. Put it next to the
+  "Ingredients" title.
+
+  5. Ingredients: scale the amounts and tick them off
+  IngredientCard gets servings, checked and onTap. Wrap the card in an InkWell.
+  When an ingredient is checked, show a check icon and a lineThrough text style.
+  Calculate the amount in build(), so 400 g becomes 200 g at 2 servings.
+
+  6. Steps: tick them off and show progress
+  - Calculate each section's firstStep instead of hardcoding 1 and 4
+    (main.dart:104-105 (ulohy/u4/main.dart#L104-L105)).
+  - Each step row gets a Checkbox with value: doneSteps.contains(firstStep + i)
+    and onChanged: (_) => onToggle(firstStep + i).
+  - Under "Method", show Text('${_doneSteps.length} / ${allSteps.length}') and a
+    LinearProgressIndicator.
+
+  7. Start cooking: open cooking mode with data, get a result back
+  - Create a new CookingPage(steps: recipe.allSteps, startStep: firstUndone)
+    with its own int _current. It shows "Step 3 of 8", the step text, and Back /
+    Next buttons. On the last step, "Finish" calls Navigator.pop(context,
+    _current + 1).
+  - In the parent:
+  Future<void> _startCooking() async {
+    final done = await Navigator.push<int>(context,
+        MaterialPageRoute(builder: (_) => CookingPage(...)));
+    if (done == null || !mounted) return;        // user pressed system back
+    setState(() => _doneSteps.addAll([for (var i = 0; i < done; i++) i]));
+    // + SnackBar "Bon appétit!"
+  }
+  - Connect it to the existing onPressed: () {} (main.dart:116
+    (ulohy/u4/main.dart#L116)). The button label can also be calculated: "Start
+    cooking", then "Continue (3 / 8)", then "Cook again".
+
+  8. Check and take screenshots
+  Run flutter analyze. Take 5 screenshots:
+  - the start screen
+  - servings changed, with the new amounts
+  - some items checked, with the progress showing
+  - cooking mode
+  - after returning, with the SnackBar and the steps checked
+
+  9. Hand it in to ulohy/u5/
+  - The folder doesn't exist yet. Get it from the template as the repo README
+    describes: run git remote add template
+    https://github.com/UPTI-UCM-TT-MCE/mt_2026.git (only needed once), then git
+    fetch template and git merge template/main --allow-unrelated-histories -m
+    "Update from template".
+  - Include:
+    - main.dart
+    - the screenshots
+    - popis.md: what you did, where the state lives and why (the table above),
+      and how you used LLM tools
+    - your prompt history, like the .txt file in U4
+
+  Suggested order: 1 → 2 → 3 → 4 → 5 → 6 → 7. Each step gives you a working app
+  you can run before moving on.
+
+  Want me to implement it in cvicenia/cv6?
+
+> <ide_selection>The user selected the lines 209 to 209 from
+  c:\Users\prima\Documents\GitHub\mt_2026_talyzina\cvicenia\cv6\main.dart:
+  ingredient.amount
+
+  This may or may not be related to the current task.</ide_selection>
+
+> implement those changes
+
+  Read 1 file (ctrl+o to expand)
+
+● Bash(cd "C:/Users/prima/Documents/GitHub/mt_2026_talyzina" && diff -q
+      cvicenia/cv6/main.dart ulohy/u4/main.dart && echo SAME; (flutter --version
+      2>&1 | head -5) ; ls…)
+  ⎿  (No output)
+
+● The cv6 file is still identical to U4, and Flutter is installed. Now I'll
+  write the implementation.
+
+● Write(cvicenia\cv6\main.dart)
+  ⎿  Added 372 lines, removed 50 lines
+       5  const String appTitle = 'Pasta Carbonara';
+       6  
+       7  class Ingredient {
+       8 -  const Ingredient(this.name, this.amount);                    
+       8 +  const Ingredient(this.name, this.quantity, this.unit);       
+       9    final String name;
+      10 -  final String amount;                                         
+      10 +  final double? quantity;   // null = "to taste", nedá sa prepo
+         +čítať                                                          
+      11 +  final String unit;                                           
+      12 +                                                               
+      13 +  String get amount => amountFor(1);                           
+      14 +                                                               
+      15 +  // množstvo prepočítané podľa porcií – vypočíta sa, neukladá 
+         +sa do stavu                                                    
+      16 +  String amountFor(double factor) {                            
+      17 +    final q = quantity;                                        
+      18 +    if (q == null) return unit;                                
+      19 +    var text = (q * factor).toStringAsFixed(1);                
+      20 +    if (text.endsWith('.0')) text = text.substring(0, text.leng
+         +th - 2);                                                       
+      21 +    return '$text $unit';                                      
+      22 +  }                                                            
+      23  }
+      24  
+      25  class MethodSection {
+     ...
+      31  class Recipe {
+      32    const Recipe({
+      33      required this.name,
+      34 +    required this.baseServings,                                
+      35      required this.photoColors,
+      36      required this.ingredients,
+      37      required this.nutrition,
+     ...
+      39    });
+      40  
+      41    final String name;
+      42 +  final int baseServings;              // pre koľko porcií sú m
+         +nožstvá                                                        
+      43    final List<Color> photoColors;       // 3 farebné plochy
+      44    final List<Ingredient> ingredients;
+      45    final List<Ingredient> nutrition;    // rovnaký tvar: názov –
+           hodnota
+      46    final List<MethodSection> method;
+      47 +                                                               
+      48 +  // všetky kroky za sebou (3 + 5 = 8)                         
+      49 +  List<String> get allSteps => [for (final section in method) .
+         +..section.steps];                                              
+      50  }
+      51  
+      52  const Recipe pastaCarbonara = Recipe(
+      53    name: 'Pasta Carbonara',
+      54 +  baseServings: 4,                                             
+      55    photoColors: [Colors.amber, Colors.orange, Colors.deepOrange]
+          ,
+      56    ingredients: [
+      39 -    Ingredient('Spaghetti', '400 g'),                          
+      40 -    Ingredient('Egg yolks', '4 pcs'),                          
+      41 -    Ingredient('Guanciale', '150 g'),                          
+      42 -    Ingredient('Pecorino', '80 g'),                            
+      43 -    Ingredient('Black pepper', 'to taste'),                    
+      44 -    Ingredient('Salt', 'to taste'),                            
+      57 +    Ingredient('Spaghetti', 400, 'g'),                         
+      58 +    Ingredient('Egg yolks', 4, 'pcs'),                         
+      59 +    Ingredient('Guanciale', 150, 'g'),                         
+      60 +    Ingredient('Pecorino', 80, 'g'),                           
+      61 +    Ingredient('Black pepper', null, 'to taste'),              
+      62 +    Ingredient('Salt', null, 'to taste'),                      
+      63    ],
+      64    nutrition: [
+      47 -    Ingredient('Energy', '620 kcal'),                          
+      48 -    Ingredient('Protein', '27 g'),                             
+      49 -    Ingredient('Fat', '24 g'),                                 
+      50 -    Ingredient('Carbohydrates', '71 g'),                       
+      65 +    Ingredient('Energy', 620, 'kcal'),                         
+      66 +    Ingredient('Protein', 27, 'g'),                            
+      67 +    Ingredient('Fat', 24, 'g'),                                
+      68 +    Ingredient('Carbohydrates', 71, 'g'),                      
+      69    ],
+      70    method: [
+      71      MethodSection('Preparation', [
+     ...
+       98    }
+       99  }
+      100  
+       83 -class RecipeDetailPage extends StatelessWidget {              
+      101 +class RecipeDetailPage extends StatefulWidget {               
+      102    const RecipeDetailPage({super.key, required this.recipe});
+      103  
+      104    final Recipe recipe;
+      105  
+      106    @override
+      107 +  State<RecipeDetailPage> createState() => _RecipeDetailPageSt
+          +ate();                                                        
+      108 +}                                                             
+      109 +                                                              
+      110 +class _RecipeDetailPageState extends State<RecipeDetailPage> {
+      111 +  // spoločný stav – potrebuje ho viac častí obrazovky, preto 
+          +je u rodiča                                                   
+      112 +  late int _servings = widget.recipe.baseServings;            
+      113 +  final Set<int> _checkedIngredients = {};                    
+      114 +  final Set<int> _doneSteps = {};        // poradie krokov v c
+          +elom recepte, 0–7                                             
+      115 +                                                              
+      116 +  // prvý neodškrtnutý krok – odtiaľ začne režim varenia      
+      117 +  int get _firstUndoneStep {                                  
+      118 +    var i = 0;                                                
+      119 +    while (_doneSteps.contains(i)) {                          
+      120 +      i++;                                                    
+      121 +    }                                                         
+      122 +    return i;                                                 
+      123 +  }                                                           
+      124 +                                                              
+      125 +  void _toggle(Set<int> set, int index) {                     
+      126 +    setState(() {                                             
+      127 +      if (set.contains(index)) {                              
+      128 +        set.remove(index);                                    
+      129 +      } else {                                                
+      130 +        set.add(index);                                       
+      131 +      }                                                       
+      132 +    });                                                       
+      133 +  }                                                           
+      134 +                                                              
+      135 +  // dáta tam (kroky, od ktorého začať), výsledok späť (koľko 
+          +krokov je hotových)                                           
+      136 +  Future<void> _startCooking() async {                        
+      137 +    final steps = widget.recipe.allSteps;                     
+      138 +    final start = _firstUndoneStep;                           
+      139 +    final done = await Navigator.push<int>(                   
+      140 +      context,                                                
+      141 +      MaterialPageRoute(                                      
+      142 +        builder: (context) => CookingPage(                    
+      143 +          title: widget.recipe.name,                          
+      144 +          steps: steps,                                       
+      145 +          startStep: start == steps.length ? 0 : start,       
+      146 +        ),                                                    
+      147 +      ),                                                      
+      148 +    );                                                        
+      149 +    // null = odchod systémovým tlačidlom späť, nič sa nemení 
+      150 +    if (done == null || !mounted) return;                     
+      151 +    setState(() => _doneSteps.addAll([for (var i = 0; i < done
+          +; i++) i]));                                                  
+      152 +    ScaffoldMessenger.of(context)                             
+      153 +      ..hideCurrentSnackBar()                                 
+      154 +      ..showSnackBar(SnackBar(                                
+      155 +        content: Text(done == steps.length                    
+      156 +            ? 'Bon appétit! All ${steps.length} steps done.'  
+      157 +            : 'Paused at step ${done + 1} of ${steps.length}.'
+          +),                                                            
+      158 +      ));                                                     
+      159 +  }                                                           
+      160 +                                                              
+      161 +  @override                                                   
+      162    Widget build(BuildContext context) {
+      163 +    final recipe = widget.recipe;                             
+      164 +    final totalSteps = recipe.allSteps.length;                
+      165 +    final doneCount = _doneSteps.length;                      
+      166 +                                                              
+      167 +    // číslo prvého kroku každej sekcie sa vypočíta, nie je na
+          +tvrdo 1 a 4                                                   
+      168 +    final methodCards = <Widget>[];                           
+      169 +    var firstStep = 0;                                        
+      170 +    for (final section in recipe.method) {                    
+      171 +      methodCards.add(MethodCard(                             
+      172 +        section: section,                                     
+      173 +        firstStep: firstStep,                                 
+      174 +        doneSteps: _doneSteps,                                
+      175 +        onToggle: (i) => _toggle(_doneSteps, i),              
+      176 +      ));                                                     
+      177 +      firstStep += section.steps.length;                      
+      178 +    }                                                         
+      179 +                                                              
+      180      return Scaffold(
+      181        body: CustomScrollView(
+      182          slivers: [
+      183            // veľký nadpis sa pri scrolle zmenší, lišta ostane 
+           pripnutá
+       94 -          SliverAppBar.large(title: Text(recipe.name)),       
+      184 +          SliverAppBar.large(                                 
+      185 +            title: Text(recipe.name),                         
+      186 +            actions: const [FavoriteButton()],                
+      187 +          ),                                                  
+      188            SliverToBoxAdapter(
+      189              child: Column(
+      190                crossAxisAlignment: CrossAxisAlignment.start,
+      191                children: [
+      192                  PhotoSection(colors: recipe.photoColors),
+      100 -                const SectionTitle('Ingredients'),            
+      101 -                IngredientSection(ingredients: recipe.ingredie
+          -nts),                                                         
+      193 +                SectionTitle(                                 
+      194 +                  'Ingredients',                              
+      195 +                  trailing: ServingsStepper(                  
+      196 +                    value: _servings,                         
+      197 +                    onChanged: (value) => setState(() => _serv
+          +ings = value),                                                
+      198 +                  ),                                          
+      199 +                ),                                            
+      200 +                IngredientSection(                            
+      201 +                  ingredients: recipe.ingredients,            
+      202 +                  factor: _servings / recipe.baseServings,    
+      203 +                  checked: _checkedIngredients,               
+      204 +                  onToggle: (i) => _toggle(_checkedIngredients
+          +, i),                                                         
+      205 +                ),                                            
+      206                  NutritionSection(nutrition: recipe.nutrition),
+      103 -                const SectionTitle('Method'),                 
+      104 -                MethodCard(section: recipe.method[0], firstSte
+          -p: 1),                                                        
+      105 -                MethodCard(section: recipe.method[1], firstSte
+          -p: 4),                                                        
+      207 +                SectionTitle(                                 
+      208 +                  'Method',                                   
+      209 +                  trailing: Text('$doneCount / $totalSteps',  
+      210 +                      style: Theme.of(context).textTheme.title
+          +Medium),                                                      
+      211 +                ),                                            
+      212 +                Padding(                                      
+      213 +                  padding: const EdgeInsets.fromLTRB(16, 0, 16
+          +, 16),                                                        
+      214 +                  child: LinearProgressIndicator(value: doneCo
+          +unt / totalSteps),                                            
+      215 +                ),                                            
+      216 +                ...methodCards,                               
+      217                ],
+      218              ),
+      219            ),
+     ...
+      224          child: Padding(
+      225            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+      226            child: FilledButton.icon(
+      116 -            onPressed: () {},                                 
+      227 +            onPressed: _startCooking,                         
+      228              icon: const Icon(Icons.restaurant),
+      118 -            label: const Text('Start cooking'),               
+      229 +            label: Text(doneCount == 0                        
+      230 +                ? 'Start cooking'                             
+      231 +                : doneCount == totalSteps                     
+      232 +                    ? 'Cook again'                            
+      233 +                    : 'Continue cooking ($doneCount / $totalSt
+          +eps)'),                                                       
+      234              style: FilledButton.styleFrom(
+      235                minimumSize: const Size.fromHeight(56),
+      236              ),
+     ...
+      241    }
+      242  }
+      243  
+      244 +// obľúbené – stav je len tu, nikto iný ho nepotrebuje        
+      245 +class FavoriteButton extends StatefulWidget {                 
+      246 +  const FavoriteButton({super.key});                          
+      247 +                                                              
+      248 +  @override                                                   
+      249 +  State<FavoriteButton> createState() => _FavoriteButtonState(
+          +);                                                            
+      250 +}                                                             
+      251 +                                                              
+      252 +class _FavoriteButtonState extends State<FavoriteButton> {    
+      253 +  bool _isFavorite = false;                                   
+      254 +                                                              
+      255 +  @override                                                   
+      256 +  Widget build(BuildContext context) {                        
+      257 +    return IconButton(                                        
+      258 +      isSelected: _isFavorite,                                
+      259 +      icon: const Icon(Icons.favorite_border),                
+      260 +      selectedIcon: const Icon(Icons.favorite, color: Colors.r
+          +ed),                                                          
+      261 +      tooltip: _isFavorite ? 'Remove from favourites' : 'Add t
+          +o favourites',                                                
+      262 +      onPressed: () => setState(() => _isFavorite = !_isFavori
+          +te),                                                          
+      263 +    );                                                        
+      264 +  }                                                           
+      265 +}                                                             
+      266 +                                                              
+      267  class SectionTitle extends StatelessWidget {
+      130 -  const SectionTitle(this.title, {super.key});                
+      268 +  const SectionTitle(this.title, {super.key, this.trailing}); 
+      269  
+      270    final String title;
+      271 +  final Widget? trailing;                                     
+      272  
+      273    @override
+      274    Widget build(BuildContext context) {
+      275      return Padding(
+      276        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      138 -      child: Text(title, style: Theme.of(context).textTheme.ti
+          -tleLarge),                                                    
+      277 +      child: Row(                                             
+      278 +        children: [                                           
+      279 +          Expanded(                                           
+      280 +            child: Text(title, style: Theme.of(context).textTh
+          +eme.titleLarge),                                              
+      281 +          ),                                                  
+      282 +          ?trailing,                                          
+      283 +        ],                                                    
+      284 +      ),                                                      
+      285      );
+      286    }
+      287  }
+      288  
+      289 +// kontrolovaný vstup – hodnotu dostane od rodiča, zmenu len o
+          +hlási cez callback                                            
+      290 +class ServingsStepper extends StatelessWidget {               
+      291 +  const ServingsStepper({                                     
+      292 +    super.key,                                                
+      293 +    required this.value,                                      
+      294 +    required this.onChanged,                                  
+      295 +  });                                                         
+      296 +                                                              
+      297 +  final int value;                                            
+      298 +  final ValueChanged<int> onChanged;                          
+      299 +                                                              
+      300 +  @override                                                   
+      301 +  Widget build(BuildContext context) {                        
+      302 +    return Row(                                               
+      303 +      mainAxisSize: MainAxisSize.min,                         
+      304 +      children: [                                             
+      305 +        IconButton.filledTonal(                               
+      306 +          onPressed: value > 1 ? () => onChanged(value - 1) : 
+          +null,                                                         
+      307 +          icon: const Icon(Icons.remove),                     
+      308 +          tooltip: 'Fewer servings',                          
+      309 +        ),                                                    
+      310 +        SizedBox(                                             
+      311 +          width: 88,                                          
+      312 +          child: Text(                                        
+      313 +            value == 1 ? '1 serving' : '$value servings',     
+      314 +            textAlign: TextAlign.center,                      
+      315 +          ),                                                  
+      316 +        ),                                                    
+      317 +        IconButton.filledTonal(                               
+      318 +          onPressed: value < 12 ? () => onChanged(value + 1) :
+          + null,                                                        
+      319 +          icon: const Icon(Icons.add),                        
+      320 +          tooltip: 'More servings',                           
+      321 +        ),                                                    
+      322 +      ],                                                      
+      323 +    );                                                        
+      324 +  }                                                           
+      325 +}                                                             
+      326 +                                                              
+      327  // fotky – PageView, dá sa potiahnuť do strany
+      328  class PhotoSection extends StatelessWidget {
+      329    const PhotoSection({super.key, required this.colors});
+     ...
+      350    }
+      351  }
+      352  
+      169 -// ingrediencie – vodorovný ListView                          
+      353 +// ingrediencie – vodorovný ListView, ťuknutím sa odškrtnú    
+      354  class IngredientSection extends StatelessWidget {
+      171 -  const IngredientSection({super.key, required this.ingredient
+          -s});                                                          
+      355 +  const IngredientSection({                                   
+      356 +    super.key,                                                
+      357 +    required this.ingredients,                                
+      358 +    required this.factor,                                     
+      359 +    required this.checked,                                    
+      360 +    required this.onToggle,                                   
+      361 +  });                                                         
+      362  
+      363    final List<Ingredient> ingredients;
+      364 +  final double factor;                   // porcie / pôvodné p
+          +orcie                                                         
+      365 +  final Set<int> checked;                                     
+      366 +  final ValueChanged<int> onToggle;                           
+      367  
+      368    @override
+      369    Widget build(BuildContext context) {
+     ...
+      373          scrollDirection: Axis.horizontal,
+      374          padding: const EdgeInsets.symmetric(horizontal: 12),
+      375          children: [
+      183 -          for (final ingredient in ingredients)               
+      184 -            IngredientCard(ingredient: ingredient),           
+      376 +          for (var i = 0; i < ingredients.length; i++)        
+      377 +            IngredientCard(                                   
+      378 +              ingredient: ingredients[i],                     
+      379 +              amount: ingredients[i].amountFor(factor),       
+      380 +              checked: checked.contains(i),                   
+      381 +              onTap: () => onToggle(i),                       
+      382 +            ),                                                
+      383          ],
+      384        ),
+      385      );
+     ...
+      387  }
+      388  
+      389  class IngredientCard extends StatelessWidget {
+      192 -  const IngredientCard({super.key, required this.ingredient});
+      390 +  const IngredientCard({                                      
+      391 +    super.key,                                                
+      392 +    required this.ingredient,                                 
+      393 +    required this.amount,                                     
+      394 +    required this.checked,                                    
+      395 +    required this.onTap,                                      
+      396 +  });                                                         
+      397  
+      398    final Ingredient ingredient;
+      399 +  final String amount;                                        
+      400 +  final bool checked;                                         
+      401 +  final VoidCallback onTap;                                   
+      402  
+      403    @override
+      404    Widget build(BuildContext context) {
+      405      final colors = Theme.of(context).colorScheme;
+      406      final text = Theme.of(context).textTheme;
+      407 +    // odškrtnutá ingrediencia je prečiarknutá                
+      408 +    final decoration = checked ? TextDecoration.lineThrough : 
+          +null;                                                         
+      409      return Card(
+      201 -      child: Padding(                                         
+      202 -        padding: const EdgeInsets.all(16),                    
+      203 -        child: Column(                                        
+      204 -          mainAxisAlignment: MainAxisAlignment.center,        
+      205 -          crossAxisAlignment: CrossAxisAlignment.start,       
+      206 -          spacing: 4,                                         
+      207 -          children: [                                         
+      208 -            Text(ingredient.name, style: text.titleMedium),   
+      209 -            Text(ingredient.amount,                           
+      210 -                style: text.bodyMedium?.copyWith(             
+      211 -                    color: colors.onSurfaceVariant)),         
+      212 -          ],                                                  
+      410 +      clipBehavior: Clip.antiAlias,      // aby efekt ťuknutia
+          + nepretekal cez rohy                                          
+      411 +      child: InkWell(                                         
+      412 +        onTap: onTap,                                         
+      413 +        child: Padding(                                       
+      414 +          padding: const EdgeInsets.all(16),                  
+      415 +          child: Row(                                         
+      416 +            spacing: 12,                                      
+      417 +            children: [                                       
+      418 +              Icon(                                           
+      419 +                checked ? Icons.check_circle : Icons.circle_ou
+          +tlined,                                                       
+      420 +                color: colors.primary,                        
+      421 +              ),                                              
+      422 +              Column(                                         
+      423 +                mainAxisAlignment: MainAxisAlignment.center,  
+      424 +                crossAxisAlignment: CrossAxisAlignment.start, 
+      425 +                spacing: 4,                                   
+      426 +                children: [                                   
+      427 +                  Text(ingredient.name,                       
+      428 +                      style: text.titleMedium                 
+      429 +                          ?.copyWith(decoration: decoration)),
+      430 +                  Text(amount,                                
+      431 +                      style: text.bodyMedium?.copyWith(       
+      432 +                          color: colors.onSurfaceVariant,     
+      433 +                          decoration: decoration)),           
+      434 +                ],                                            
+      435 +              ),                                              
+      436 +            ],                                                
+      437 +          ),                                                  
+      438          ),
+      439        ),
+      440      );
+     ...
+      466      super.key,
+      467      required this.section,
+      468      required this.firstStep,
+      469 +    required this.doneSteps,                                  
+      470 +    required this.onToggle,                                   
+      471    });
+      472  
+      473    final MethodSection section;
+      247 -  final int firstStep;                                        
+      474 +  final int firstStep;                   // poradie prvého kro
+          +ku v celom recepte                                            
+      475 +  final Set<int> doneSteps;                                   
+      476 +  final ValueChanged<int> onToggle;                           
+      477  
+      478    @override
+      479    Widget build(BuildContext context) {
+      480 +    final colors = Theme.of(context).colorScheme;             
+      481      return Card(
+      482        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      483        child: Padding(
+      254 -        padding: const EdgeInsets.all(16),                    
+      484 +        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),    
+      485          child: Column(
+      486            crossAxisAlignment: CrossAxisAlignment.start,
+      257 -          spacing: 8,                                         
+      487            children: [
+      488              Text(section.title, style: Theme.of(context).textT
+           heme.titleMedium),
+      489              for (var i = 0; i < section.steps.length; i++)
+      261 -              Row(                                            
+      262 -                crossAxisAlignment: CrossAxisAlignment.start, 
+      263 -                spacing: 8,                                   
+      264 -                children: [                                   
+      265 -                  Text('${firstStep + i}.'),                  
+      266 -                  Expanded(child: Text(section.steps[i])),    
+      267 -                ],                                            
+      490 +              CheckboxListTile(                               
+      491 +                value: doneSteps.contains(firstStep + i),     
+      492 +                onChanged: (_) => onToggle(firstStep + i),    
+      493 +                controlAffinity: ListTileControlAffinity.leadi
+          +ng,                                                           
+      494 +                contentPadding: EdgeInsets.zero,              
+      495 +                title: Text(                                  
+      496 +                  '${firstStep + i + 1}. ${section.steps[i]}',
+      497 +                  style: doneSteps.contains(firstStep + i)    
+      498 +                      ? TextStyle(                            
+      499 +                          color: colors.onSurfaceVariant,     
+      500 +                          decoration: TextDecoration.lineThrou
+          +gh,                                                           
+      501 +                        )                                     
+      502 +                      : null,                                 
+      503 +                ),                                            
+      504                ),
+      505            ],
+      506          ),
+     ...
+      508      );
+      509    }
+      510  }
+      511 +                                                              
+      512 +// režim varenia – krok po kroku, aktuálny krok pozná len táto
+          + stránka                                                      
+      513 +class CookingPage extends StatefulWidget {                    
+      514 +  const CookingPage({                                         
+      515 +    super.key,                                                
+      516 +    required this.title,                                      
+      517 +    required this.steps,                                      
+      518 +    required this.startStep,                                  
+      519 +  });                                                         
+      520 +                                                              
+      521 +  final String title;                                         
+      522 +  final List<String> steps;                                   
+      523 +  final int startStep;                                        
+      524 +                                                              
+      525 +  @override                                                   
+      526 +  State<CookingPage> createState() => _CookingPageState();    
+      527 +}                                                             
+      528 +                                                              
+      529 +class _CookingPageState extends State<CookingPage> {          
+      530 +  late int _current = widget.startStep;                       
+      531 +                                                              
+      532 +  @override                                                   
+      533 +  Widget build(BuildContext context) {                        
+      534 +    final steps = widget.steps;                               
+      535 +    final isLast = _current == steps.length - 1;              
+      536 +    final colors = Theme.of(context).colorScheme;             
+      537 +    final text = Theme.of(context).textTheme;                 
+      538 +    return Scaffold(                                          
+      539 +      appBar: AppBar(                                         
+      540 +        title: Text(widget.title),                            
+      541 +        // zavretie vráti počet hotových krokov – všetky pred 
+          +aktuálnym                                                     
+      542 +        leading: CloseButton(onPressed: () => Navigator.pop(co
+          +ntext, _current)),                                            
+      543 +      ),                                                      
+      544 +      body: Padding(                                          
+      545 +        padding: const EdgeInsets.all(24),                    
+      546 +        child: Column(                                        
+      547 +          crossAxisAlignment: CrossAxisAlignment.start,       
+      548 +          spacing: 16,                                        
+      549 +          children: [                                         
+      550 +            LinearProgressIndicator(value: (_current + 1) / st
+          +eps.length),                                                  
+      551 +            Text('Step ${_current + 1} of ${steps.length}',   
+      552 +                style: text.titleMedium?.copyWith(color: color
+          +s.primary)),                                                  
+      553 +            Expanded(                                         
+      554 +              child: SingleChildScrollView(                   
+      555 +                child: Text(steps[_current], style: text.headl
+          +ineSmall),                                                    
+      556 +              ),                                              
+      557 +            ),                                                
+      558 +          ],                                                  
+      559 +        ),                                                    
+      560 +      ),                                                      
+      561 +      bottomNavigationBar: SafeArea(                          
+      562 +        child: Padding(                                       
+      563 +          padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),  
+      564 +          child: Row(                                         
+      565 +            spacing: 16,                                      
+      566 +            children: [                                       
+      567 +              Expanded(                                       
+      568 +                child: OutlinedButton.icon(                   
+      569 +                  onPressed:                                  
+      570 +                      _current > 0 ? () => setState(() => _cur
+          +rent--) : null,                                               
+      571 +                  icon: const Icon(Icons.arrow_back),         
+      572 +                  label: const Text('Back'),                  
+      573 +                  style: OutlinedButton.styleFrom(            
+      574 +                    minimumSize: const Size.fromHeight(56),   
+      575 +                  ),                                          
+      576 +                ),                                            
+      577 +              ),                                              
+      578 +              Expanded(                                       
+      579 +                child: FilledButton.icon(                     
+      580 +                  onPressed: isLast                           
+      581 +                      ? () => Navigator.pop(context, steps.len
+          +gth)                                                          
+      582 +                      : () => setState(() => _current++),     
+      583 +                  icon: Icon(isLast ? Icons.check : Icons.arro
+          +w_forward),                                                   
+      584 +                  label: Text(isLast ? 'Finish' : 'Next'),    
+      585 +                  style: FilledButton.styleFrom(              
+      586 +                    minimumSize: const Size.fromHeight(56),   
+      587 +                  ),                                          
+      588 +                ),                                            
+      589 +              ),                                              
+      590 +            ],                                                
+      591 +          ),                                                  
+      592 +        ),                                                    
+      593 +      ),                                                      
+      594 +    );                                                        
+      595 +  }                                                           
+      596 +}                                                             
+
+● The IDE errors come from cvicenia/cv6/ holding only main.dart with no Flutter
+  project, so package:flutter isn't found. I'm making one small compatibility
+  tweak and then checking the code in a temporary copy of counter_journal.
+
+● Update(cvicenia\cv6\main.dart)  ⎿  Added 1 line, removed 1 line
+      279            Expanded(
+      280              child: Text(title, style: Theme.of(context).textTh
+           eme.titleLarge),
+      281            ),
+      282 -          ?trailing,                                          
+      282 +          if (trailing != null) trailing!,                    
+      283          ],
+      284        ),
+      285      );
+
+● Bash(S="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-GitH
+      ub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad"
+      cd "C:/Users/prima…)
+  ⎿  (No output)
+
+  Made 1 scratchpad edit +127 (ctrl+o to expand)
+
+● Bash(cd "C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-Git
+      Hub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/cv6_c
+      heck" && flut…)
+  ⎿  (No output)
+  ⎿  (timeout 6m 40s)
+
+● Bash(cd "C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-Git
+      Hub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/cv6_c
+      heck" && flut…)
+  ⎿  (No output)
+  ⎿  (timeout 5m)
+
+● The test tapped "−" twice before a frame rendered, so both taps read the old
+  value 4; that's a test bug, not an app bug. I'm fixing the test and switching
+  back to ?trailing, which your SDK ^3.13.5 supports and the analyzer prefers.
+
+● Update(cvicenia\cv6\main.dart)
+  ⎿  Added 1 line, removed 1 line
+      279            Expanded(
+      280              child: Text(title, style: Theme.of(context).textTh
+           eme.titleLarge),
+      281            ),
+      282 -          if (trailing != null) trailing!,                    
+      282 +          ?trailing,                     // pridá sa, len ak n
+          +ie je null                                                    
+      283          ],
+      284        ),
+      285      );
+
+● Bash(S="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-GitH
+      ub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/cv6_ch
+      eck"
+      cd "$S"…)
+  ⎿  (No output)
+  ⎿  (timeout 6m 40s)
+
+● Bash(cd "C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-Git
+      Hub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/cv6_c
+      heck" && sed…)
+  ⎿  (No output)
+  ⎿  (timeout 5m)
+
+● Bash(cd "C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-Git
+      Hub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/cv6_c
+      heck" && sed…)
+  ⎿  (No output)
+  ⎿  (timeout 5m)
+
+● I've implemented everything in cvicenia/cv6/main.dart. flutter analyze finds
+  no issues and all 8 widget tests I wrote pass.
+
+  What's new (group 1):
+  - Favourite heart: a FavoriteButton in the app bar. It keeps its on/off state
+    itself, because nothing else needs it.
+  - Servings "− 4 +": a ServingsStepper that gets its value from
+    RecipeDetailPage and reports changes through onChanged. This is your
+    controlled input. It goes from 1 to 12 servings, and the amounts update as
+    you change it (for example, 2 servings shows 200 g and 2 pcs).
+  - Tick off ingredients: tapping a card shows a check icon and crosses the text
+    out.
+  - Tick off steps: each step has a checkbox, and "Method" shows the progress as
+    "3 / 8" with a progress bar. The step numbers are now calculated instead of
+    the hardcoded 1 and 4.
+  - Start cooking: opens a CookingPage that receives the steps and the first
+    unticked step, then shows one step at a time with Back / Next. It sends a
+    result back to the recipe page:
+    - "Finish" returns 8, so all steps get ticked and a "Bon appétit!" message
+      appears.
+    - "✕" returns how far you got, so the steps before the current one get
+      ticked.
+    - The system back button returns nothing, so nothing changes.
+  - Bottom button: the label changes from "Start cooking" to "Continue cooking
+    (3 / 8)" to "Cook again".
+
+  Calculated, not stored in state: the scaled amounts, the progress counts, the
+  step numbers, the first unticked step and the button label.
+
+  To run it: copy main.dart into any Flutter project's lib/. No image files are
+  needed. I checked it inside a temporary copy of your counter_journal project,
+  so your real projects weren't changed.
+
+  The tests are at C:\Users\prima\AppData\Local\Temp\claude\c--Users-prima-Docum
+  ents-GitHub-mt-2026-talyzina\865a4db5-b8c3-4a26-b7d2-163258309dcf\scratchpad\c
+  v6_check\test\widget_test.dart, if you want to mention them in your
+  description.
+
+  Still to do for handing in:
+  1. Get ulohy/u5/ from the template.
+  2. Copy main.dart there.
+  3. Take the screenshots.
+  4. Write popis.md, including where the state lives and why.
+  5. Add your prompt history.
+
+  Nothing is committed yet.
+
+> <ide_opened_file>The user opened the file
+  c:\Users\prima\Documents\GitHub\mt_2026_talyzina\ulohy\u3\main.dart in the
+  IDE. This may or may not be related to the current task.</ide_opened_file>
+
+> add everything urself
+
+● I'll start by getting the U5 assignment folder from the course template.
+
+● Bash(cd "C:/Users/prima/Documents/GitHub/mt_2026_talyzina" && git status
+      --short && (git remote get-url template 2>/dev/null || git remote add
+      template https://githu…)
+  ⎿  Denied by auto mode classifier ∙ [Remote Repoint] ∙ see
+     https://code.claude.com/docs/s/claude-code-auto-mode
+
+● Adding the template as a remote was blocked, so I'll read the U5 assignment
+  straight from the template's URL instead, without changing your repo's
+  remotes.
+
+● Bash(cd "C:/Users/prima/Documents/GitHub/mt_2026_talyzina" && git fetch
+      https://github.com/UPTI-UCM-TT-MCE/mt_2026.git main 2>&1 | tail -3 && git
+      ls-tree -r --name-o…)
+  ⎿  Error: Exit code 128
+     From https://github.com/UPTI-UCM-TT-MCE/mt_2026
+      * branch            main       -> FETCH_HEAD
+     ulohy/README.md
+     ulohy/u1/README.md
+     ulohy/u2/README.md
+     ulohy/u3/README.md
+     ulohy/u4/README.md
+     === u5 README ===
+     fatal: path 'ulohy/u5/README.md' does not exist in 'FETCH_HEAD'
+
+● The template doesn't have a U5 folder yet, so your slide is the only
+  assignment text. I'll read the U3 and U4 assignments from the template to
+  match the format the teacher expects.
+
+● Bash(cd "C:/Users/prima/Documents/GitHub/mt_2026_talyzina" && git show
+      FETCH_HEAD:ulohy/README.md && echo "=== u4 ===" && git show
+      FETCH_HEAD:ulohy/u4/README.md && e…)
+  ⎿  (No output)
+
+● The U4 assignment asks for the dart files, screenshots and prompt history, and
+  I'll put those in ulohy/u5/ along with a popis.md. Next I'm making
+  screenshots of each app state from a temporary Flutter project.
+
+● Bash(F=$(dirname "$(dirname "$(which flutter)")"); echo "$F"; ls
+      "$F/bin/cache/artifacts/material_fonts/" | head -40)
+  ⎿  (No output)
+
+● Bash(S="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-GitH
+      ub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad"
+      cd "$S" && flutter…)
+  ⎿  (No output)
+  ⎿  (timeout 5m)
+
+  Made 1 scratchpad edit +101 (ctrl+o to expand)
+
+● Bash(cd "C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-Git
+      Hub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/recip
+      e_detail" &&…)
+  ⎿  Error: Exit code 49
+     Analyzing recipe_detail...
+     No issues found! (ran in 2.7s)
+     00:03 +4: C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents
+     -GitHub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/re
+     cipe_detail/test/screenshots_test.dart: screenshots
+     00:04 +5: C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents
+     -GitHub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/re
+     cipe_detail/test/screenshots_test.dart: screenshots
+     00:04 +6: C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents
+     -GitHub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/re
+     cipe_detail/test/widget_test.dart: cooking mode: finish marks all steps
+     done
+     00:04 +7: C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents
+     -GitHub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/re
+     cipe_detail/test/widget_test.dart: cooking mode: starts at first undone,
+     close returns progress
+     00:05 +8: C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents
+     -GitHub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/re
+     cipe_detail/test/widget_test.dart: cooking mode: system back changes
+     nothing
+     00:05 +9: All tests passed!
+     total 408
+     … +8 lines (ctrl+o to expand)
+
+● All 9 tests pass and the 5 screenshots were rendered. I'll look at each one.
+
+  Read 5 files (ctrl+o to expand)
+
+● The screenshots look mostly right, but the DEBUG banner covers the heart icon
+  and the "Method 8 / 8" header is scrolled off-screen. I'll hide the banner for
+  the screenshots and adjust the scroll position.
+● Bash(cd "C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-Git
+      Hub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad/recip
+      e_detail" &&…)
+  ⎿  (No output)
+  ⎿  (timeout 5m)
+
+  Read 2 files (ctrl+o to expand)
+
+● Both fixes are confirmed: the heart turns red and "Method 8 / 8" shows on
+  screen. I'm pulling your prompts and my text replies from this session's
+  Claude Code log next, leaving out tool calls and system text.
+
+● Bash(P="C:/Users/prima/.claude/projects/c--Users-prima-Documents-GitHub-mt-202
+      6-talyzina"; ls -la "$P" | head; which node jq dart 2>/dev/null;
+      F="$P/865a4db5-b8c3-4a…)
+  ⎿  (No output)
+
+  Made 1 scratchpad edit +42 (ctrl+o to expand)
+
+● Bash(S="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-GitH
+      ub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad"; node
+      "$S/extract_…)
+  ⎿  (No output)
+
+  Read 1 file (ctrl+o to expand)
+
+● The history output looks good. The log is missing your answer to my "copy or
+  move?" question, so I'll add it by hand, plus a header and a note about this
+  last turn, then move everything into ulohy/u5/.
+
+● Bash(S="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-GitH
+      ub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad";
+      R="C:/Users/prima…)
+  ⎿  Created ulohy\u5\widget_test.dart (+132 -0)
+        1 +import 'package:recipe_detail/main.dart';                     
+        2 +import 'package:flutter/material.dart';                       
+        3 +import 'package:flutter_test/flutter_test.dart';              
+        4 +                                                              
+        5 +Future<void> pumpApp(WidgetTester tester) async {             
+        6 +  tester.view.physicalSize = const Size(1080, 2340);          
+        7 +  tester.view.devicePixelRatio = 3;                           
+        8 +  addTearDown(tester.view.reset);                             
+        9 +  await tester.pumpWidget(const MyApp());                     
+       10 +}                                                             
+       11 +                                                              
+       12 +Future<void> tapVisible(WidgetTester tester, Finder finder) as
+          +ync {                                                         
+       13 +  await tester.ensureVisible(finder);                         
+       14 +  await tester.pumpAndSettle();                               
+       15 +  await tester.tap(finder);                                   
+       16 +  await tester.pumpAndSettle();                               
+       17 +}                                                             
+       18 +                                                              
+       19 +void main() {                                                 
+       20 +  testWidgets('initial screen', (tester) async {              
+       21 +    await pumpApp(tester);                                    
+       22 +    expect(find.text('4 servings'), findsOneWidget);          
+       23 +    expect(find.text('400 g'), findsOneWidget);               
+       24 +    expect(find.text('0 / 8'), findsOneWidget);               
+       25 +    expect(find.text('Start cooking'), findsOneWidget);       
+       26 +  });                                                         
+       27 +                                                              
+       28 +  testWidgets('servings stepper rescales amounts', (tester) as
+          +ync {                                                         
+       29 +    await pumpApp(tester);                                    
+       30 +    await tester.tap(find.byTooltip('Fewer servings'));       
+       31 +    await tester.pump();                                      
+       32 +    await tester.tap(find.byTooltip('Fewer servings'));       
+       33 +    await tester.pump();                                      
+       34 +    await tester.pump();                                      
+       35 +    expect(find.text('2 servings'), findsOneWidget);          
+       36 +    expect(find.text('200 g'), findsOneWidget);               
+       37 +    expect(find.text('2 pcs'), findsOneWidget);               
+       38 +    await tester.tap(find.byTooltip('More servings'));        
+       39 +    await tester.pump();                                      
+       40 +    await tester.pump();                                      
+     … 92 more lines (ctrl+o to expand)
+  ⎿  … 6 more files changed
+
+● Bash(S="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-GitH
+      ub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad";
+      R="C:/Users/prima…)
+  ⎿  Denied by auto mode classifier ∙ [Sensitive-Source Provenance] ∙ see
+     https://code.claude.com/docs/s/claude-code-auto-mode
+
+● The safety check blocked saving the prompt history, so you'll need to export
+  it yourself at the end; I'm moving the ticked-ingredients state into
+  IngredientSection since only that list uses it.
+
+● Update(cvicenia\cv6\main.dart)
+  ⎿  Removed 1 line
+      110  class _RecipeDetailPageState extends State<RecipeDetailPage> {
+      111    // spoločný stav – potrebuje ho viac častí obrazovky, preto 
+           je u rodiča
+      112    late int _servings = widget.recipe.baseServings;
+      113 -  final Set<int> _checkedIngredients = {};                    
+      113    final Set<int> _doneSteps = {};        // poradie krokov v c
+           elom recepte, 0–7
+      114  
+      115    // prvý neodškrtnutý krok – odtiaľ začne režim varenia
+
+● Update(cvicenia\cv6\main.dart)
+  ⎿  Added 4 lines, removed 4 lines
+      121      return i;
+      122    }
+      123  
+      124 -  void _toggle(Set<int> set, int index) {                     
+      124 +  void _toggleStep(int index) {                               
+      125      setState(() {
+      126 -      if (set.contains(index)) {                              
+      127 -        set.remove(index);                                    
+      126 +      if (_doneSteps.contains(index)) {                       
+      127 +        _doneSteps.remove(index);                             
+      128        } else {
+      129 -        set.add(index);                                       
+      129 +        _doneSteps.add(index);                                
+      130        }
+      131      });
+      132    }
+
+● Update(cvicenia\cv6\main.dart)
+  ⎿  Added 1 line, removed 1 line
+      171          section: section,
+      172          firstStep: firstStep,
+      173          doneSteps: _doneSteps,
+      174 -        onToggle: (i) => _toggle(_doneSteps, i),              
+      174 +        onToggle: _toggleStep,                                
+      175        ));
+      176        firstStep += section.steps.length;
+      177      }
+
+● Update(cvicenia\cv6\main.dart)
+  ⎿  Removed 2 lines
+      199                  IngredientSection(
+      200                    ingredients: recipe.ingredients,
+      201                    factor: _servings / recipe.baseServings,
+      202 -                  checked: _checkedIngredients,               
+      203 -                  onToggle: (i) => _toggle(_checkedIngredients
+          -, i),                                                         
+      202                  ),
+      203                  NutritionSection(nutrition: recipe.nutrition),
+      204                  SectionTitle(
+
+● Update(cvicenia\cv6\main.dart)
+  ⎿  Added 24 lines, removed 8 lines
+      348  }
+      349  
+      350  // ingrediencie – vodorovný ListView, ťuknutím sa odškrtnú
+      351 -class IngredientSection extends StatelessWidget {             
+      351 +// odškrtnutie potrebuje len tento zoznam, preto je stav tu – 
+          +nie v karte,                                                  
+      352 +// lebo ListView karty mimo obrazovky zahodí a stav by sa stra
+          +til                                                           
+      353 +class IngredientSection extends StatefulWidget {              
+      354    const IngredientSection({
+      355      super.key,
+      356      required this.ingredients,
+      357      required this.factor,
+      356 -    required this.checked,                                    
+      357 -    required this.onToggle,                                   
+      358    });
+      359  
+      360    final List<Ingredient> ingredients;
+      361    final double factor;                   // porcie / pôvodné p
+           orcie
+      362 -  final Set<int> checked;                                     
+      363 -  final ValueChanged<int> onToggle;                           
+      362  
+      363    @override
+      364 +  State<IngredientSection> createState() => _IngredientSection
+          +State();                                                      
+      365 +}                                                             
+      366 +                                                              
+      367 +class _IngredientSectionState extends State<IngredientSection>
+          + {                                                            
+      368 +  final Set<int> _checked = {};                               
+      369 +                                                              
+      370 +  void _toggle(int index) {                                   
+      371 +    setState(() {                                             
+      372 +      if (_checked.contains(index)) {                         
+      373 +        _checked.remove(index);                               
+      374 +      } else {                                                
+      375 +        _checked.add(index);                                  
+      376 +      }                                                       
+      377 +    });                                                       
+      378 +  }                                                           
+      379 +                                                              
+      380 +  @override                                                   
+      381    Widget build(BuildContext context) {
+      382 +    final ingredients = widget.ingredients;                   
+      383      return SizedBox(
+      384        height: 90,
+      385        child: ListView(
+     ...
+      389            for (var i = 0; i < ingredients.length; i++)
+      390              IngredientCard(
+      391                ingredient: ingredients[i],
+      376 -              amount: ingredients[i].amountFor(factor),       
+      377 -              checked: checked.contains(i),                   
+      378 -              onTap: () => onToggle(i),                       
+      392 +              amount: ingredients[i].amountFor(widget.factor),
+      393 +              checked: _checked.contains(i),                  
+      394 +              onTap: () => _toggle(i),                        
+      395              ),
+      396          ],
+      397        ),
+
+● Those IDE warnings came from the edits being applied one at a time, plus the
+  usual missing-Flutter-project errors. I'll check the final file in the
+  temporary project and render the screenshots again.
+
+● Bash(S="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Documents-GitH
+      ub-mt-2026-talyzina/865a4db5-b8c3-4a26-b7d2-163258309dcf/scratchpad";
+      R="C:/Users/prima…)
+  ⎿  Updated ulohy\u5\main.dart (+29 -16)
+      110  class _RecipeDetailPageState extends State<RecipeDetailPage> {
+      111    // spoločný stav – potrebuje ho viac častí obrazovky, preto 
+           je u rodiča
+      112    late int _servings = widget.recipe.baseServings;
+      113 -  final Set<int> _checkedIngredients = {};                    
+      113    final Set<int> _doneSteps = {};        // poradie krokov v c
+           elom recepte, 0–7
+      114  
+      115    // prvý neodškrtnutý krok – odtiaľ začne režim varenia
+     ...
+      121      return i;
+      122    }
+      123  
+      125 -  void _toggle(Set<int> set, int index) {                     
+      124 +  void _toggleStep(int index) {                               
+      125      setState(() {
+      127 -      if (set.contains(index)) {                              
+      128 -        set.remove(index);                                    
+      126 +      if (_doneSteps.contains(index)) {                       
+      127 +        _doneSteps.remove(index);                             
+      128        } else {
+      130 -        set.add(index);                                       
+      129 +        _doneSteps.add(index);                                
+      130        }
+      131      });
+      132    }
+     ...
+      171          section: section,
+      172          firstStep: firstStep,
+      173          doneSteps: _doneSteps,
+      175 -        onToggle: (i) => _toggle(_doneSteps, i),              
+      174 +        onToggle: _toggleStep,                                
+      175        ));
+      176        firstStep += section.steps.length;
+      177      }
+     ...
+      199                  IngredientSection(
+      200                    ingredients: recipe.ingredients,
+      201                    factor: _servings / recipe.baseServings,
+      203 -                  checked: _checkedIngredients,               
+      204 -                  onToggle: (i) => _toggle(_checkedIngredients
+          -, i),                                                         
+      202                  ),
+      203                  NutritionSection(nutrition: recipe.nutrition),
+      204                  SectionTitle(
+     ...
+      348  }
+     … 54 more lines (ctrl+o to expand)
+  ⎿  (timeout 6m 40s)
+
+● Analysis is clean and all 9 tests pass. The screenshots rendered byte-for-byte
+  the same, so the change didn't affect how the app looks. Now the description:
+
+● Write(ulohy\u5\popis.md)
+  ⎿  Wrote 84 lines to ulohy\u5\popis.md
+       1 # U5 – Interaktívna obrazovka
+       2
+       3 **Skupina 1 – Detail receptu.** Obrazovka z U4 (Pasta Carbonara)
+          je oživená: obľúbené, počet porcií
+       4 s prepočtom množstiev, odškrtávanie ingrediencií a krokov s prie
+         behom a režim varenia krok po kroku.
+       5
+       6 ## Súbory
+       7
+       8 | Súbor | Obsah |
+     … +76 lines (ctrl+o to expand)
+
+● Bash(cd "C:/Users/prima/Documents/GitHub/mt_2026_talyzina" && diff -q
+      cvicenia/cv6/main.dart ulohy/u5/main.dart && echo "main.dart in sync" &&
+      git status --short &&…)
+  ⎿  (No output)
+
+● ulohy/u5/ now has everything except the prompt history, which you'll need to
+  export yourself. The code passes flutter analyze with no issues and all 9
+  tests pass (8 widget tests plus the one that renders the screenshots).
+
+  What's in ulohy/u5/:
+  - main.dart (ulohy/u5/main.dart): the implementation, the same file as in
+    cvicenia/cv6/.
+  - widget_test.dart (ulohy/u5/widget_test.dart): 8 tests covering servings, the
+    heart, ticking items off, and cooking mode (Finish, ✕ and system back).
+  - 5 screenshots: start screen, 2 servings with ticked ingredients, steps at 3
+    / 8, cooking mode at step 4, and the result after Finish. A test renders
+    them at phone size (390 × 844) with real fonts and no DEBUG banner. They're
+    not taken from a phone or emulator, and popis.md (ulohy/u5/popis.md) says
+    so.
+  - popis.md (ulohy/u5/popis.md), in Slovak:
+    - what's done
+    - where each piece of state lives and why
+    - the controlled input
+    - how data goes to cooking mode and the result comes back
+    - what's calculated rather than stored
+    - how the LLM was used
+
+  One code change since last time: I moved the ticked ingredients from the whole
+  page down into IngredientSection, because only that list uses them. This fits
+  "state as low as possible" better. It can't go lower, into each card, because
+  the list throws away cards that scroll off-screen and their state would be
+  lost. Your page still keeps the servings and the done steps, because several
+  parts of the screen use those.
+
+  What didn't work:
+  - Prompt history: the safety check blocked me from copying text out of Claude
+    Code's session log into your repo. To get it, type /export here after this
+    turn and save it as ulohy/u5/historia-promptov.txt. That's the name popis.md
+    uses, and the export will also include this last turn.
+  - Template update: the safety check also blocked me from adding the course
+    template as a git remote. I read the template directly instead. It has no U5
+    folder yet, so I made ulohy/u5/ myself, and your remotes are unchanged.
+
+  Before you hand it in:
+  1. The README asks you to describe what you changed yourself. I didn't make
+     anything up, so add that to the "Použitie LLM" section of popis.md if you
+     edited anything.
+  2. Read through main.dart so you can explain it.
+  3. Nothing is committed yet: ulohy/u5/ and cvicenia/cv6/ are both untracked.
+     Want me to commit and push them?
