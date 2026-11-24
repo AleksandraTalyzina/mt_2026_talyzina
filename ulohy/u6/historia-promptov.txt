@@ -1,0 +1,1649 @@
+
+> <browser_instruction># Claude in Chrome browser automation
+
+  You have access to browser automation tools (mcp__claude-in-chrome__*) for
+  interacting with web pages in Chrome. Follow these guidelines for effective
+  browser automation.
+
+  ## Loading deferred tools
+
+  If the mcp__claude-in-chrome__* tools are deferred (must be loaded via
+  ToolSearch before use), load every tool you expect to need in ONE ToolSearch
+  call — the select query accepts a comma-separated list — never one call per
+  tool. Start with the core set:
+
+  ToolSearch with query
+  "select:mcp__claude-in-chrome__tabs_context_mcp,mcp__claude-in-chrome__naviga
+  te,mcp__claude-in-chrome__computer,mcp__claude-in-chrome__read_page,mcp__clau
+  de-in-chrome__tabs_create_mcp,mcp__claude-in-chrome__tabs_close_mcp"
+
+  Add task-specific tools to the same call when the task obviously needs them:
+  read_console_messages / read_network_requests for debugging, form_input for
+  forms, gif_creator for recordings, javascript_tool for page scripting.
+
+  ## GIF recording
+
+  When performing multi-step browser interactions that the user may want to
+  review or share, use mcp__claude-in-chrome__gif_creator to record them.
+
+  You must ALWAYS:
+  * Capture extra frames before and after taking actions to ensure smooth
+  playback
+  * Name the file meaningfully to help the user identify it later (e.g.,
+  "login_process.gif")
+
+  ## Console log debugging
+
+  You can use mcp__claude-in-chrome__read_console_messages to read console
+  output. Console output may be verbose. If you are looking for specific log
+  entries, use the 'pattern' parameter with a regex-compatible pattern. This
+  filters results efficiently and avoids overwhelming output. For example, use
+  pattern: "[MyApp]" to filter for application-specific logs rather than
+  reading all console output.
+
+  ## Alerts and dialogs
+
+  IMPORTANT: Do not trigger JavaScript alerts, confirms, prompts, or browser
+  modal dialogs through your actions. These browser dialogs block all further
+  browser events and will prevent the extension from receiving any subsequent
+  commands. Instead, when possible, use console.log for debugging and then use
+  the mcp__claude-in-chrome__read_console_messages tool to read those log
+  messages. If a page has dialog-triggering elements:
+  1. Avoid clicking buttons or links that may trigger alerts (e.g., "Delete"
+  buttons with confirmation dialogs)
+  2. If you must interact with such elements, warn the user first that this may
+  interrupt the session
+  3. Use mcp__claude-in-chrome__javascript_tool to check for and dismiss any
+  existing dialogs before proceeding
+
+  If you accidentally trigger a dialog and lose responsiveness, inform the user
+  they need to manually dismiss it in the browser.
+
+  ## Avoid rabbit holes and loops
+
+  When using browser automation tools, stay focused on the specific task. If
+  you encounter any of the following, stop and ask the user for guidance:
+  - Unexpected complexity or tangential browser exploration
+  - Browser tool calls failing or returning errors after 2-3 attempts
+  - No response from the browser extension
+  - Page elements not responding to clicks or input
+  - Pages not loading or timing out
+  - Unable to complete the browser task despite multiple approaches
+
+  Explain what you attempted, what went wrong, and ask how the user would like
+  to proceed. Do not keep retrying the same failing browser action or explore
+  unrelated pages without checking in first.
+
+  ## Tab context and session startup
+
+  IMPORTANT: At the start of each browser automation session, call
+  mcp__claude-in-chrome__tabs_context_mcp first to get information about the
+  user's current browser tabs. Use this context to understand what the user
+  might want to work with before creating new tabs.
+
+  Never reuse tab IDs from a previous/other session. Follow these guidelines:
+  1. Only reuse an existing tab if the user explicitly asks to work with it
+  2. Otherwise, create a new tab with mcp__claude-in-chrome__tabs_create_mcp
+  3. If a tool returns an error indicating the tab doesn't exist or is invalid,
+  call tabs_context_mcp to get fresh tab IDs
+  4. When a tab is closed by the user or a navigation error occurs, call
+  tabs_context_mcp to see what tabs are available</browser_instruction>
+
+> Pracujeme na školskom zadaní vo Flutteri (Dart). Úloha: „U6 – Etapa 1: Zoznam
+  receptov“.
+  Postupuj krok za krokom a na konci mi stručne zhrň, čo si spravil.
+
+  Zadanie
+
+  Aplikácia zobrazí prvých 10 receptov z DummyJSON API (bez API kľúča). Pri
+  každom recepte ukáže:
+  názov, obrázok, kuchyňu, čas prípravy a hodnotenie.
+
+  Povinné požiadavky:
+  1. Komunikácia so serverom je v JEDNEJ triede (lib/services/recipe_api.dart,
+  trieda RecipeApi).
+     Dáta sú v modeli (lib/models/recipe.dart, trieda Recipe s factory
+  Recipe.fromJson).
+     UI nesmie obsahovať URL adresy ani parsovať JSON.
+  2. Používateľ vidí, že sa dáta načítavajú (CircularProgressIndicator pri
+  prvom načítaní).
+  3. Pri chybe sa zobrazí zrozumiteľná správa po slovensky a tlačidlo „Skúsiť
+  znova“.
+  4. Obnova potiahnutím (RefreshIndicator). POČAS OBNOVY OSTANÚ STARÉ DÁTA na
+  obrazovke.
+     Nový zoznam prepíše starý až po úspešnej odpovedi. Ak obnova zlyhá, staré
+  dáta ostanú
+     a chyba sa ukáže v SnackBar.
+     ListView musí mať AlwaysScrollableScrollPhysics, aby sa dal potiahnuť
+  vždy.
+
+  API
+
+  Endpoint:
+  https://dummyjson.com/recipes?limit=10&select=name,image,cuisine,prepTimeMinu
+  tes,rating
+
+  Skutočná odpoveď (overená v prehliadači, skrátená):
+  {"recipes":[{"id":1,"name":"Classic Margherita
+  Pizza","image":"https://cdn.dummyjson.com/recipe-images/1.webp","cuisine":"It
+  alian","prepTimeMinutes":20,"rating":4.6},
+  ...],"total":50,"skip":0,"limit":10}
+
+  Typy: id int, name/image/cuisine String, prepTimeMinutes int, rating číslo.
+  Rating čítaj ako (json['rating'] as num).toDouble(), lebo môže prísť aj celé
+  číslo.
+  Obrázky sú .webp. Použi Image.network s errorBuilder (náhradná ikona).
+  Daj HTTP požiadavke timeout 10 s. Ak status nie je 200, vyhoď výnimku.
+
+  Užitočné parametre DummyJSON na testovanie:
+  - &delay=2000 – odpoveď oneskorená o 2 s (test načítavania a obnovy)
+  - https://dummyjson.com/http/503 – vráti chybu 503 (test chybového stavu)
+
+  Technické
+
+  - Použi balík http (flutter pub add http). Žiadny state management balík,
+    stačí StatefulWidget so stavom _recipes, _loading, _error.
+  - Android: v AndroidManifest.xml musí byť povolenie INTERNET.
+    macOS: povoľ com.apple.security.network.client v oboch .entitlements
+  súboroch.
+  - Material 3, prehľadný ListTile (obrázok vľavo so zaoblenými rohmi; názov;
+    podtitul „kuchyňa • X min“; vpravo hodnotenie s hviezdičkou).
+  - Kód nech je čistý, bez nepoužitých importov. Na konci spusti flutter
+  analyze,
+    ktorý musí prejsť bez chýb.
+
+  Screenshoty (dôkaz)
+
+  Ulož ich do priečinka screenshots/:
+  1. screenshots/etapa1_zoznam.png – načítaný zoznam 10 receptov.
+  2. screenshots/etapa1_chyba.png – chybový stav so správou a tlačidlom „Skúsiť
+  znova“.
+     Na tento screenshot DOČASNE prepni URL v RecipeApi na
+  https://dummyjson.com/http/503,
+     spusti aplikáciu nanovo, nasnímaj obrazovku a potom URL VRÁŤ SPÄŤ.
+     Over to (napr. grep na „http/503“ v lib/ nesmie nič nájsť).
+
+  Postup snímania: zisti dostupné zariadenia cez flutter devices.
+  - Ak beží Android emulátor alebo iOS simulátor, spusti aplikáciu naň a použi
+    flutter screenshot -d <id> -o screenshots/<názov>.png.
+  - Na macOS desktope môžeš použiť screencapture -l <windowid> alebo
+  screencapture -i.
+  - Pred snímaním počkaj, kým sa načítajú obrázky.
+  - Ak sa screenshot nedá spraviť automaticky, zastav sa a napíš mi presne,
+    kedy mám screenshot spraviť ručne (aplikáciu nechaj spustenú v správnom
+  stave).
+
+  Po nasnímaní si oba obrázky otvor a skontroluj, že ukazujú správny stav.
+
+  Git
+
+  Keď je všetko hotové a URL je vrátená na /recipes:
+  - ak priečinok ešte nie je git repozitár, spusti git init
+  - git add . (vrátane screenshots/)
+  - git commit -m "U6 etapa 1"
+    Push NEROB, najprv sa ma opýtaj.
+
+● Začínam – pozriem sa na priečinok cv8 a dostupné nástroje.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne aplikacie/cvicenia/cv8"
+      && ls -la && git -C .. rev-parse --show-toplevel; ls ..; cat
+      "/c/Users/prima/.claude/p…)
+  ⎿  (No output)
+
+● Bash(flutter --version; flutter devices; flutter emulators)
+  ⎿  (No output)
+  ⎿  (timeout 3m)
+
+● Cvičenie cv8 je prázdne a už leží v existujúcom git repozitári cvicenia, takže
+  inicializácia nie je potrebná. Android emulátor Pixel_API_36 spúšťam na
+  pozadí a medzitým si pozriem štýl predchádzajúceho cvičenia.
+
+● Bash(flutter emulators --launch Pixel_API_36)
+  ⎿  Running in the background (↓ to manage)
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne aplikacie/cvicenia" &&
+      cat .gitignore 2>/dev/null; echo ---; ls cv7 cv7/lib; echo ---; cat
+      cv7/pubspec.yaml |…)
+  ⎿  (No output)
+
+● Predošlé cvičenia majú projekt v podpriečinku (napr. cv7/weather_lab). Pozriem
+  si jeho kód, aby nový projekt štýlovo sedel.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv7/weather_lab" && find . -path ./build -prune -o
+      -path ./.dart_tool -prune -o -name "*.da…)
+  ⎿  (No output)
+
+● Background command "Launch the Android emulator" completed (exit code 0)
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv7/weather_lab" && cat lib/weather_api.dart; echo
+      ======; sed -n 1,200p lib/cities_page.da…)
+  ⎿  (No output)
+
+● Vytvorím Flutter projekt cv8/recipe_app (rovnaká konvencia ako
+  cv7/weather_lab) a pridám balík http.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne aplikacie/cvicenia/cv8"
+      && flutter create --org sk.mobilne recipe_app 2>&1 | tail -15 && cd
+      recipe_app && flut…)
+  ⎿  Created recipe_app\.gitignore (+48 -0)
+       1 +# Miscellaneous                                                
+       2 +*.class                                                        
+       3 +*.log                                                          
+       4 +*.pyc                                                          
+       5 +*.swp                                                          
+       6 +.DS_Store                                                      
+       7 +.atom/                                                         
+       8 +.build/                                                        
+       9 +.buildlog/                                                     
+      10 +.history                                                       
+      11 +.svn/                                                          
+      12 +.swiftpm/                                                      
+      13 +migrate_working_dir/                                           
+      14 +                                                               
+      15 +# IntelliJ related                                             
+      16 +*.iml                                                          
+      17 +*.ipr                                                          
+      18 +*.iws                                                          
+      19 +.idea/                                                         
+      20 +                                                               
+      21 +# The .vscode folder contains launch configuration and tasks yo
+         +u configure in                                                 
+      22 +# VS Code which you may wish to be included in version control,
+         + so this line                                                  
+      23 +# is commented out by default.                                 
+      24 +#.vscode/                                                      
+      25 +                                                               
+      26 +# Flutter/Dart/Pub related                                     
+      27 +**/doc/api/                                                    
+      28 +**/ios/Flutter/.last_build_id                                  
+      29 +.dart_tool/                                                    
+      30 +.flutter-plugins-dependencies                                  
+      31 +.pub-cache/                                                    
+      32 +.pub/                                                          
+      33 +/build/                                                        
+      34 +/coverage/                                                     
+      35 +                                                               
+      36 +# Symbolication related                                        
+      37 +app.*.symbols                                                  
+      38 +                                                               
+      39 +# Obfuscation related                                          
+      40 +app.*.map.json                                                 
+     … 8 more lines (ctrl+o to expand)
+  ⎿  Created recipe_app\.metadata (+45 -0)
+       1 +# This file tracks properties of this Flutter project.         
+       2 +# Used by Flutter tool to assess capabilities and perform upgra
+         +des etc.                                                       
+       3 +#                                                              
+       4 +# This file should be version controlled and should not be manu
+         +ally edited.                                                   
+       5 +                                                               
+       6 +version:                                                       
+       7 +  revision: "abaf9c523780a608bd46686fd5e53740a07077f8"         
+       8 +  channel: "stable"                                            
+       9 +                                                               
+      10 +project_type: app                                              
+      11 +                                                               
+      12 +# Tracks metadata for the flutter migrate command              
+      13 +migration:                                                     
+      14 +  platforms:                                                   
+      15 +    - platform: root                                           
+      16 +      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      17 +      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      18 +    - platform: android                                        
+      19 +      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      20 +      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      21 +    - platform: ios                                            
+      22 +      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      23 +      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      24 +    - platform: linux                                          
+      25 +      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      26 +      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      27 +    - platform: macos                                          
+      28 +      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      29 +      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      30 +    - platform: web                                            
+      31 +      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      32 +      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      33 +    - platform: windows                                        
+      34 +      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      35 +      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      36 +                                                               
+      37 +  # User provided section                                      
+      38 +                                                               
+      39 +  # List of Local paths (relative to this file) that should be 
+      40 +  # ignored by the migrate tool.                               
+     … 5 more lines (ctrl+o to expand)
+  ⎿  Created recipe_app\README.md (+17 -0)
+       1 +# recipe_app                                                   
+       2 +                                                               
+       3 +A new Flutter project.                                         
+       4 +                                                               
+       5 +## Getting Started                                             
+       6 +                                                               
+       7 +This project is a starting point for a Flutter application.    
+       8 +                                                               
+       9 +A few resources to get you started if this is your first Flutte
+         +r project:                                                     
+      10 +                                                               
+      11 +- [Learn Flutter](https://docs.flutter.dev/get-started/learn-fl
+         +utter)                                                         
+      12 +- [Write your first Flutter app](https://docs.flutter.dev/get-s
+         +tarted/codelab)                                                
+      13 +- [Flutter learning resources](https://docs.flutter.dev/referen
+         +ce/learning-resources)                                         
+      14 +                                                               
+      15 +For help getting started with Flutter development, view the    
+      16 +[online documentation](https://docs.flutter.dev/), which offers
+         + tutorials,                                                    
+      17 +samples, guidance on mobile development, and a full API referen
+         +ce.                                                            
+  ⎿  Created recipe_app\analysis_options.yaml (+38 -0)
+       1 +# This file configures the analyzer, which statically analyzes 
+         +Dart code to                                                   
+       2 +# check for errors, warnings, and lints.                       
+       3 +#                                                              
+       4 +# The issues identified by the analyzer are surfaced in the UI 
+         +of Dart-enabled                                                
+       5 +# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer 
+         +can also be                                                    
+       6 +# invoked from the command line by running `flutter analyze`.  
+       7 +                                                               
+       8 +# The following line activates a set of recommended lints for F
+         +lutter apps,                                                   
+       9 +# packages, and plugins designed to encourage good coding pract
+         +ices.                                                          
+      10 +include: package:flutter_lints/flutter.yaml                    
+      11 +                                                               
+      12 +analyzer:                                                      
+      13 +  exclude:                                                     
+      14 +    - build/**                                                 
+      15 +    - android/**                                               
+      16 +    - ios/**                                                   
+      17 +    - web/**                                                   
+      18 +    - windows/**                                               
+      19 +    - macos/**                                                 
+      20 +    - linux/**                                                 
+      21 +                                                               
+      22 +linter:                                                        
+      23 +  # The lint rules applied to this project can be customized in
+         + the                                                           
+      24 +  # section below to disable rules from the `package:flutter_li
+         +nts/flutter.yaml`                                              
+      25 +  # included above or to enable additional rules. A list of all
+         + available lints                                               
+      26 +  # and their documentation is published at https://dart.dev/li
+         +nts.                                                           
+      27 +  #                                                            
+      28 +  # Instead of disabling a lint rule for the entire project in 
+         +the                                                            
+      29 +  # section below, it can also be suppressed for a single line 
+         +of code                                                        
+      30 +  # or a specific dart file by using the `// ignore: name_of_li
+         +nt` and                                                        
+      31 +  # `// ignore_for_file: name_of_lint` syntax on the line or in
+         + the file                                                      
+      32 +  # producing the lint.                                        
+      33 +  rules:                                                       
+      34 +    # avoid_print: false  # Uncomment to disable the `avoid_pri
+         +nt` rule                                                       
+      35 +    # prefer_single_quotes: true  # Uncomment to enable the `pr
+         +efer_single_quotes` rule                                       
+      36 +                                                               
+      37 +# Additional information about this file can be found at       
+      38 +# https://dart.dev/guides/language/analysis-options            
+  ⎿  Created recipe_app\android\.gitignore (+14 -0)
+       1 +gradle-wrapper.jar                                             
+       2 +/.gradle                                                       
+       3 +/captures/                                                     
+       4 +/gradlew                                                       
+       5 +/gradlew.bat                                                   
+       6 +/local.properties                                              
+       7 +GeneratedPluginRegistrant.java                                 
+       8 +.cxx/                                                          
+       9 +                                                               
+      10 +# Remember to never publicly share your keystore.              
+      11 +# See https://flutter.dev/to/reference-keystore                
+      12 +key.properties                                                 
+      13 +**/*.keystore                                                  
+      14 +**/*.jks                                                       
+  ⎿  … 125 more files changed
+  ⎿  (timeout 5m)
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && cat
+      android/app/src/main/AndroidManifest.xml; echo ====; for f in macos/…)
+  ⎿  (No output)
+
+● API odpovedá podľa očakávania. Teraz povolenia: INTERNET pre Android a
+  network.client pre oba macOS entitlements súbory.
+
+● Update(recipe_app\android\app\src\main\AndroidManifest.xml)
+  ⎿  Added 2 lines
+      1  <manifest xmlns:android="http://schemas.android.com/apk/res/andr
+         oid">
+      2 +    <!-- Needed to download recipes from DummyJSON -->          
+      3 +    <uses-permission android:name="android.permission.INTERNET"/
+        +>                                                               
+      4      <application
+      5          android:label="recipe_app"
+      6          android:name="${applicationName}"
+
+● Update(recipe_app\macos\Runner\DebugProfile.entitlements)
+  ⎿  Added 2 lines
+       8    <true/>
+       9    <key>com.apple.security.network.server</key>
+      10    <true/>
+      11 +  <key>com.apple.security.network.client</key>                 
+      12 +  <true/>                                                      
+      13  </dict>
+      14  </plist>
+
+● Update(recipe_app\macos\Runner\Release.entitlements)
+  ⎿  Added 2 lines
+       4  <dict>
+       5    <key>com.apple.security.app-sandbox</key>
+       6    <true/>
+       7 +  <key>com.apple.security.network.client</key>                 
+       8 +  <true/>                                                      
+       9  </dict>
+      10  </plist>
+
+● Teraz kód: model, API trieda a obrazovka so zoznamom.
+
+● Write(recipe_app\lib\models\recipe.dart)
+  ⎿  Wrote 29 lines to recipe_app\lib\models\recipe.dart
+      1 class Recipe {
+      2   const Recipe({
+      3     required this.id,
+      4     required this.name,
+      5     required this.image,
+      6     required this.cuisine,
+      7     required this.prepTimeMinutes,
+      8     required this.rating,
+      9   });
+     … +20 lines (ctrl+o to expand)
+
+● Write(recipe_app\lib\services\recipe_api.dart)
+  ⎿  Wrote 50 lines to recipe_app\lib\services\recipe_api.dart
+      1 import 'dart:async';
+      2 import 'dart:convert';
+      3
+      4 import 'package:http/http.dart' as http;
+      5
+      6 import '../models/recipe.dart';
+      7
+      8 class RecipeApiException implements Exception {
+      9   const RecipeApiException(this.message);
+     … +41 lines (ctrl+o to expand)
+
+● Write(recipe_app\lib\screens\recipe_list_page.dart)
+  ⎿  Wrote 150 lines to recipe_app\lib\screens\recipe_list_page.dart
+      1 import 'package:flutter/material.dart';
+      2
+      3 import '../models/recipe.dart';
+      4 import '../services/recipe_api.dart';
+      5
+      6 class RecipeListPage extends StatefulWidget {
+      7   const RecipeListPage({super.key, required this.api});
+      8
+      9   final RecipeApi api;
+     … +141 lines (ctrl+o to expand)
+
+● Write(recipe_app\lib\main.dart)  ⎿  Added 10 lines, removed 108 lines
+        1  import 'package:flutter/material.dart';
+        2  
+        3 +import 'screens/recipe_list_page.dart';                       
+        4 +import 'services/recipe_api.dart';                            
+        5 +                                                              
+        6  void main() {
+        4 -  runApp(const MyApp());                                      
+        7 +  runApp(const RecipeApp());                                  
+        8  }
+        9  
+        7 -class MyApp extends StatelessWidget {                         
+        8 -  const MyApp({super.key});                                   
+       10 +class RecipeApp extends StatelessWidget {                     
+       11 +  const RecipeApp({super.key});                               
+       12  
+       10 -  // This widget is the root of your application.             
+       13    @override
+       14    Widget build(BuildContext context) {
+       15      return MaterialApp(
+       14 -      title: 'Flutter Demo',                                  
+       16 +      title: 'Recepty',                                       
+       17 +      debugShowCheckedModeBanner: false,                      
+       18        theme: ThemeData(
+       16 -        // This is the theme of your application.             
+       17 -        //                                                    
+       18 -        // TRY THIS: Try running your application with "flutte
+          -r run". You'll see                                            
+       19 -        // the application has a purple toolbar. Then, without
+          - quitting the app,                                            
+       20 -        // try changing the seedColor in the colorScheme below
+          - to Colors.green                                              
+       21 -        // and then invoke "hot reload" (save your changes or 
+          -press the "hot                                                
+       22 -        // reload" button in a Flutter-supported IDE, or press
+          - "r" if you used                                              
+       23 -        // the command line to start the app).                
+       24 -        //                                                    
+       25 -        // Notice that the counter didn't reset back to zero; 
+          -the application                                               
+       26 -        // state is not lost during the reload. To reset the s
+          -tate, use hot                                                 
+       27 -        // restart instead.                                   
+       28 -        //                                                    
+       29 -        // This works for code too, not just values: Most code
+          - changes can be                                               
+       30 -        // tested with just a hot reload.                     
+       31 -        colorScheme: .fromSeed(seedColor: Colors.deepPurple), 
+       19 +        colorScheme: ColorScheme.fromSeed(seedColor: Colors.de
+          +epOrange),                                                    
+       20        ),
+       33 -      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+       21 +      home: RecipeListPage(api: RecipeApi()),                 
+       22      );
+       23    }
+       24  }
+       37 -                                                              
+       38 -class MyHomePage extends StatefulWidget {                     
+       39 -  const MyHomePage({super.key, required this.title});         
+       40 -                                                              
+       41 -  // This widget is the home page of your application. It is s
+          -tateful, meaning                                              
+       42 -  // that it has a State object (defined below) that contains 
+          -fields that affect                                            
+       43 -  // how it looks.                                            
+       44 -                                                              
+       45 -  // This class is the configuration for the state. It holds t
+          -he values (in this                                            
+       46 -  // case the title) provided by the parent (in this case the 
+          -App widget) and                                               
+       47 -  // used by the build method of the State. Fields in a Widget
+          - subclass are                                                 
+       48 -  // always marked "final".                                   
+       49 -                                                              
+       50 -  final String title;                                         
+       51 -                                                              
+       52 -  @override                                                   
+       53 -  State<MyHomePage> createState() => _MyHomePageState();      
+       54 -}                                                             
+       55 -                                                              
+       56 -class _MyHomePageState extends State<MyHomePage> {            
+       57 -  int _counter = 0;                                           
+       58 -                                                              
+       59 -  void _incrementCounter() {                                  
+       60 -    setState(() {                                             
+       61 -      // This call to setState tells the Flutter framework tha
+          -t something has                                               
+       62 -      // changed in this State, which causes it to rerun the b
+          -uild method below                                             
+       63 -      // so that the display can reflect the updated values. I
+          -f we changed                                                  
+       64 -      // _counter without calling setState(), then the build m
+          -ethod would not be                                            
+       65 -      // called again, and so nothing would appear to happen. 
+       66 -      _counter++;                                             
+       67 -    });                                                       
+       68 -  }                                                           
+       69 -                                                              
+       70 -  @override                                                   
+       71 -  Widget build(BuildContext context) {                        
+       72 -    // This method is rerun every time setState is called, for
+          - instance as done                                             
+       73 -    // by the _incrementCounter method above.                 
+       74 -    //                                                        
+       75 -    // The Flutter framework has been optimized to make rerunn
+          -ing build methods                                             
+       76 -    // fast, so that you can just rebuild anything that needs 
+          -updating rather                                               
+       77 -    // than having to individually change instances of widgets
+          -.                                                             
+       78 -    return Scaffold(                                          
+       79 -      appBar: AppBar(                                         
+       80 -        // TRY THIS: Try changing the color here to a specific
+          - color (to                                                    
+       81 -        // Colors.amber, perhaps?) and trigger a hot reload to
+          - see the AppBar                                               
+       82 -        // change color while the other colors stay the same. 
+       83 -        backgroundColor: Theme.of(context).colorScheme.inverse
+          -Primary,                                                      
+       84 -        // Here we take the value from the MyHomePage object t
+          -hat was created by                                            
+       85 -        // the App.build method, and use it to set our appbar 
+          -title.                                                        
+       86 -        title: Text(widget.title),                            
+       87 -      ),                                                      
+       88 -      body: Center(                                           
+       89 -        // Center is a layout widget. It takes a single child 
+          -and positions it                                              
+       90 -        // in the middle of the parent.                       
+       91 -        child: Column(                                        
+       92 -          // Column is also a layout widget. It takes a list o
+          -f children and                                                
+       93 -          // arranges them vertically. By default, it sizes it
+          -self to fit its                                               
+       94 -          // children horizontally, and tries to be as tall as
+          - its parent.                                                  
+       95 -          //                                                  
+       96 -          // Column has various properties to control how it s
+          -izes itself and                                               
+       97 -          // how it positions its children. Here we use mainAx
+          -isAlignment to                                                
+       98 -          // center the children vertically; the main axis her
+          -e is the vertical                                             
+       99 -          // axis because Columns are vertical (the cross axis
+          - would be                                                     
+      100 -          // horizontal).                                     
+      101 -          //                                                  
+      102 -          // TRY THIS: Invoke "debug painting" (choose the "To
+          -ggle Debug Paint"                                             
+      103 -          // action in the IDE, or press "p" in the console), 
+          -to see the                                                    
+      104 -          // wireframe for each widget.                       
+      105 -          mainAxisAlignment: .center,                         
+      106 -          children: [                                         
+      107 -            const Text('You have pushed the button this many t
+          -imes:'),                                                      
+      108 -            Text(                                             
+      109 -              '$_counter',                                    
+      110 -              style: Theme.of(context).textTheme.headlineMediu
+          -m,                                                            
+      111 -            ),                                                
+      112 -          ],                                                  
+      113 -        ),                                                    
+      114 -      ),                                                      
+      115 -      floatingActionButton: FloatingActionButton(             
+      116 -        onPressed: _incrementCounter,                         
+      117 -        tooltip: 'Increment',                                 
+      118 -        child: const Icon(Icons.add),                         
+      119 -      ),                                                      
+      120 -    );                                                        
+      121 -  }                                                           
+      122 -}                                                             
+
+● Pôvodný test počítadla by s novou aplikáciou neprešiel, preto ho nahradím
+  testami, ktoré overia všetky štyri stavy (hlavne že staré dáta ostanú počas
+  obnovy aj po neúspešnej obnove).
+
+  Read 1 file (ctrl+o to expand)
+
+● Write(recipe_app\test\widget_test.dart)
+  ⎿  Added 83 lines, removed 19 lines
+       1 -// This is a basic Flutter widget test.                        
+       2 -//                                                             
+       3 -// To perform an interaction with a widget in your test, use th
+         -e WidgetTester                                                 
+       4 -// utility in the flutter_test package. For example, you can se
+         -nd tap and scroll                                              
+       5 -// gestures. You can also use WidgetTester to find child widget
+         -s in the widget                                                
+       6 -// tree, read text, and verify that the values of widget proper
+         -ties are correct.                                              
+       7 -                                                               
+       1  import 'package:flutter/material.dart';
+       2  import 'package:flutter_test/flutter_test.dart';
+       3  
+      11 -import 'package:recipe_app/main.dart';                         
+       4 +import 'package:recipe_app/models/recipe.dart';                
+       5 +import 'package:recipe_app/screens/recipe_list_page.dart';     
+       6 +import 'package:recipe_app/services/recipe_api.dart';          
+       7  
+       8 +// answers after 1 s without going to the internet             
+       9 +class FakeRecipeApi extends RecipeApi {                        
+      10 +  bool fail = false;                                           
+      11 +  int calls = 0;                                               
+      12 +                                                               
+      13 +  @override                                                    
+      14 +  Future<List<Recipe>> fetchRecipes() async {                  
+      15 +    calls++;                                                   
+      16 +    await Future<void>.delayed(const Duration(seconds: 1));    
+      17 +    if (fail) throw const RecipeApiException('Server vrátil chy
+         +bu 503.');                                                     
+      18 +    return [                                                   
+      19 +      Recipe(                                                  
+      20 +        id: calls,                                             
+      21 +        name: 'Recept $calls',                                 
+      22 +        image: '',                                             
+      23 +        cuisine: 'Italian',                                    
+      24 +        prepTimeMinutes: 20,                                   
+      25 +        rating: 4.6,                                           
+      26 +      ),                                                       
+      27 +    ];                                                         
+      28 +  }                                                            
+      29 +}                                                              
+      30 +                                                               
+      31  void main() {
+      14 -  testWidgets('Counter increments smoke test', (WidgetTester te
+         -ster) async {                                                  
+      15 -    // Build our app and trigger a frame.                      
+      16 -    await tester.pumpWidget(const MyApp());                    
+      32 +  late FakeRecipeApi api;                                      
+      33  
+      18 -    // Verify that our counter starts at 0.                    
+      19 -    expect(find.text('0'), findsOneWidget);                    
+      20 -    expect(find.text('1'), findsNothing);                      
+      34 +  setUp(() => api = FakeRecipeApi());                          
+      35  
+      22 -    // Tap the '+' icon and trigger a frame.                   
+      23 -    await tester.tap(find.byIcon(Icons.add));                  
+      36 +  Future<void> pumpPage(WidgetTester tester) {                 
+      37 +    return tester.pumpWidget(MaterialApp(home: RecipeListPage(a
+         +pi: api)));                                                    
+      38 +  }                                                            
+      39 +                                                               
+      40 +  testWidgets('shows a spinner, then the list', (tester) async 
+         +{                                                              
+      41 +    await pumpPage(tester);                                    
+      42 +    expect(find.byType(CircularProgressIndicator), findsOneWidg
+         +et);                                                           
+      43 +                                                               
+      44 +    await tester.pump(const Duration(seconds: 1));             
+      45 +    expect(find.text('Recept 1'), findsOneWidget);             
+      46 +    expect(find.text('Italian • 20 min'), findsOneWidget);     
+      47 +    expect(find.text('4.6'), findsOneWidget);                  
+      48 +  });                                                          
+      49 +                                                               
+      50 +  testWidgets('first load error shows a message and retry', (te
+         +ster) async {                                                  
+      51 +    api.fail = true;                                           
+      52 +    await pumpPage(tester);                                    
+      53 +    await tester.pump(const Duration(seconds: 1));             
+      54 +    expect(find.text('Server vrátil chybu 503.'), findsOneWidge
+         +t);                                                            
+      55 +                                                               
+      56 +    api.fail = false;                                          
+      57 +    await tester.tap(find.text('Skúsiť znova'));               
+      58      await tester.pump();
+      59 +    expect(find.byType(CircularProgressIndicator), findsOneWidg
+         +et);                                                           
+      60  
+      26 -    // Verify that our counter has incremented.                
+      27 -    expect(find.text('0'), findsNothing);                      
+      28 -    expect(find.text('1'), findsOneWidget);                    
+      61 +    await tester.pump(const Duration(seconds: 1));             
+      62 +    expect(find.text('Recept 2'), findsOneWidget);             
+      63    });
+      64 +                                                               
+      65 +  testWidgets('refresh keeps old data until the new list arrive
+         +s', (                                                          
+      66 +    tester,                                                    
+      67 +  ) async {                                                    
+      68 +    await pumpPage(tester);                                    
+      69 +    await tester.pump(const Duration(seconds: 1));             
+      70 +                                                               
+      71 +    await tester.fling(find.text('Recept 1'), const Offset(0, 3
+         +00), 1000);                                                    
+      72 +    await tester.pump(const Duration(milliseconds: 500));      
+      73 +    expect(api.calls, 2);                                      
+      74 +    expect(find.text('Recept 1'), findsOneWidget); // still on 
+         +screen                                                         
+      75 +                                                               
+      76 +    await tester.pumpAndSettle();                              
+      77 +    expect(find.text('Recept 1'), findsNothing);               
+      78 +    expect(find.text('Recept 2'), findsOneWidget);             
+      79 +  });                                                          
+      80 +                                                               
+      81 +  testWidgets('failed refresh keeps old data and shows a SnackB
+         +ar', (                                                         
+      82 +    tester,                                                    
+      83 +  ) async {                                                    
+      84 +    await pumpPage(tester);                                    
+      85 +    await tester.pump(const Duration(seconds: 1));             
+      86 +                                                               
+      87 +    api.fail = true;                                           
+      88 +    await tester.fling(find.text('Recept 1'), const Offset(0, 3
+         +00), 1000);                                                    
+      89 +    await tester.pumpAndSettle();                              
+      90 +    expect(api.calls, 2);                                      
+      91 +    expect(find.text('Recept 1'), findsOneWidget);             
+      92 +    expect(find.text('Obnova zlyhala. Server vrátil chybu 503.'
+         +), findsOneWidget);                                            
+      93 +  });                                                          
+      94  }
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && dart format lib test && flutter
+      analyze && flutter test 2>&1 | tail -25)
+  ⎿  Updated recipe_app\lib\screens\recipe_list_page.dart (+2 -3)
+      40          setState(() => _error = '$e');
+      41        } else {
+      42          // refresh failed -> keep the old data, just tell the u
+          ser
+      43 -        ScaffoldMessenger.of(                                  
+      44 -          context,                                             
+      45 -        ).showSnackBar(SnackBar(content: Text('Obnova zlyhala. 
+         -$e')));                                                        
+      43 +        ScaffoldMessenger.of(context)                          
+      44 +            .showSnackBar(SnackBar(content: Text('Obnova zlyhal
+         +a. $e')));                                                     
+      45        }
+      46      } finally {
+      47        if (mounted) setState(() => _loading = false);
+  ⎿  Updated recipe_app\test\widget_test.dart (+4 -1)
+      89      await tester.pumpAndSettle();
+      90      expect(api.calls, 2);
+      91      expect(find.text('Recept 1'), findsOneWidget);
+      92 -    expect(find.text('Obnova zlyhala. Server vrátil chybu 503.'
+         -), findsOneWidget);                                            
+      92 +    expect(                                                    
+      93 +      find.text('Obnova zlyhala. Server vrátil chybu 503.'),   
+      94 +      findsOneWidget,                                          
+      95 +    );                                                         
+      96    });
+      97  }
+  ⎿  (timeout 5m)
+
+● Analýza prešla; jeden test padol na riadku expect(api.calls, 2) –
+  pravdepodobne iba časovanie animácie RefreshIndicatora v teste. Pozriem
+  detail.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && flutter test --plain-name "refresh
+      keeps old data" 2>&1 | grep -E "Expec…)
+  ⎿  (No output)
+  ⎿  (timeout 3m)
+
+● Ako som predpokladal – onRefresh sa zavolá až po dobehnutí animácie
+  indikátora, a jeden pump je len jeden snímok. Dám tam niekoľko snímok.
+
+● Update(recipe_app\test\widget_test.dart)
+  ⎿  Added 4 lines, removed 1 line
+      69      await tester.pump(const Duration(seconds: 1));
+      70  
+      71      await tester.fling(find.text('Recept 1'), const Offset(0, 3
+          00), 1000);
+      72 -    await tester.pump(const Duration(milliseconds: 500));      
+      72 +    // a few frames so the indicator snaps into place and calls
+         + onRefresh                                                     
+      73 +    for (var i = 0; i < 5; i++) {                              
+      74 +      await tester.pump(const Duration(milliseconds: 100));    
+      75 +    }                                                          
+      76      expect(api.calls, 2);
+      77      expect(find.text('Recept 1'), findsOneWidget); // still on 
+          screen
+      78  
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && flutter test 2>&1 | tail -3; flutter
+      devices 2>&1 | grep -i emulator)
+  ⎿  (No output)
+  ⎿  (timeout 3m)
+
+● Všetky 4 testy prešli. Emulátor ešte štartuje – počkám, kým dobootuje.
+
+● Bash(ADB=$(command -v adb || echo
+      "$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"); echo "$ADB"; "$ADB"
+      -s emulator-5554 wait-for-device; for i in $(seq 1 60); do…)
+  ⎿  Running in the background (↓ to manage)
+  ⎿  (timeout 4m)
+
+● Bash(ADB="$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"; "$ADB" devices
+      -l; tasklist 2>/dev/null | grep -i -E "qemu|emulator" )
+  ⎿  (No output)
+
+● Emulátor je po ~5 minútach stále „offline“. Pozriem výstup spúšťania
+  emulátora.
+
+  Listed 1 directory (ctrl+o to expand)
+
+● Emulátor beží bez GPU akcelerácie, takže boot trvá dlhšie. Medzitým si vopred
+  zostavím debug APK, aby bolo neskoršie spustenie rýchlejšie.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && flutter build apk --debug 2>&1 |
+      tail -5)
+  ⎿  (No output)
+  ⎿  (timeout 10m)
+
+● Bash(ADB="$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"; "$ADB" devices;
+      cat "C:\Users\prima\AppData\Local\Temp\claude\c--Users-prima-Desktop-Skola
+      -3rd-year-mobi…)
+  ⎿  (No output)
+
+● Stále „offline“ po ~8 minútach. Skúsim reštartovať adb server (bezpečné,
+  emulátor tým neovplyvním).
+
+● Bash(ADB="$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"; "$ADB"
+      kill-server; "$ADB" start-server; "$ADB" devices; "$ADB" -s emulator-5554
+      shell getprop sys.boot_…)
+  ⎿  Error: Exit code 1
+     * daemon not running; starting now at tcp:5037
+     * daemon started successfully
+     List of devices attached
+     emulator-5554   offline
+
+     adb.exe: device offline
+
+● PowerShell(Get-Process qemu-system-x86_64, emulator -ErrorAction
+            SilentlyContinue | Select-Object Name, Id, CPU, WorkingSet64,
+            StartTime | Format-Table -AutoSize; Get-Chil…)
+  ⎿  Name                  Id      CPU WorkingSet64 StartTime
+     ----                  --      --- ------------ ---------
+     emulator           14368 0.140625      9637888 11/24/2026 10:36:43 AM
+     … +8 lines (ctrl+o to expand)
+
+● QEMU has used only about 6 seconds of CPU over roughly 12 minutes, so it is
+  hung rather than booting. I'm killing it and relaunching through emulator.exe
+  with output so the cause is visible.
+
+● Stop Task
+  ⎿  ADB=$(command -v adb || echo
+     "$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"); echo "$ADB";
+     "$ADB" -s emulator-5554 wait-for-device; for i in $(seq 1 60); do… ·
+     stopped
+
+● PowerShell(Stop-Process -Id 16000, 14368 -Force -Confirm:$false; Start-Sleep
+            -Seconds 2; Get-Process qemu-system-x86_64, emulator -ErrorAction
+            SilentlyContinue | Measure-O…)
+  ⎿  Error: Exit code 1
+     Count
+     -----
+         0
+
+● Emulátor je ukončený. Spúšťam ho nanovo (cold boot, softvérové GPU) a výstup
+  zapisujem do logu.
+● Bash("$LOCALAPPDATA/Android/Sdk/emulator/emulator.exe" -avd Pixel_API_36
+      -no-snapshot-load -gpu swiftshader_indirect >
+      "C:/Users/prima/AppData/Local/Temp/claude/c--U…)
+  ⎿  Running in the background (↓ to manage)
+
+● Monitor(emulator boot status or errors)
+  ⎿  Monitor started · task b1z4ehoc5 · timeout 600s
+
+● Čakám na boot emulátora (monitor ma upozorní na úspech aj chybu).
+
+  Read 1 file (ctrl+o to expand)
+
+● Monitor event: "emulator boot status or errors"
+  WARNING      | Failed to process .ini file
+  C:\Users\prima\.android\avd\..\avd\Pixel_API_36.avd\quickbootChoice.ini for
+  reading.
+  INFO         | Critical: Failed to load opengl32sw (The specified module could
+  not be found.) (:0, )
+  INFO         | Warning: Software OpenGL failed. Falling back to system OpenGL.
+  (:0, )
+
+● Zatiaľ len bežné varovania (softvérové OpenGL padá späť na systémové). Čakám
+  ďalej.
+
+● Bash(grep -v -E "^\s"
+      "C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Desktop-Skola-3rd
+      -year-mobilne-aplikacie-cvicenia-cv8/43d16d61-ee5a-4bc2-a91d-d5609b98…)
+  ⎿  (No output)
+
+● Tentoraz sa kernel reálne spúšťa (WHPX akcelerácia funguje, pamäť rastie).
+  Čakám na dokončenie bootu.
+
+● Bash(ADB="$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"; until [ "$("$ADB"
+      -s emulator-5554 shell getprop sys.boot_completed 2>/dev/null | tr -d
+      '\r')" = "1" ] |…)
+  ⎿  Running in the background (↓ to manage)
+
+● Čakám na notifikáciu o dobootovaní emulátora.
+
+> dllbl
+
+● Bash(ADB="$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"; "$ADB" devices;
+      "$ADB" -s emulator-5554 shell getprop sys.boot_completed 2>&1; powershell
+      -NoProfile -Co…)
+  ⎿  (No output)
+
+● „dllbl“ vyzerá ako preklep, takže v práci pokračujem. Ak si chcela niečo iné,
+  napíš.
+
+  Kde som:
+  - Hotový je kód (Recipe, RecipeApi, RecipeListPage), povolenie INTERNET pre
+    Android a network.client v oboch macOS .entitlements súboroch.
+  - flutter analyze prešiel bez chýb. Prešli aj 4 widget testy: načítavanie,
+    chybový stav s tlačidlom „Skúsiť znova“, obnova so zachovaním starých dát a
+    neúspešná obnova so SnackBarom.
+  - Zatiaľ chýbajú screenshoty. Android emulátor sa pri prvom pokuse zasekol: za
+    12 minút spotreboval len 6 s CPU. Ukončila som ho a spustila nanovo bez
+    snapshotu. Teraz už naozaj bootuje (CPU ~106 s, pamäť ~1,8 GB), ale adb ho
+    ešte hlási ako „offline“.
+
+  Hneď ako emulátor nabehne, spustím aplikáciu a nasnímam etapa1_zoznam.png.
+  Potom dočasne prepnem URL na /http/503, nasnímam etapa1_chyba.png, vrátim URL
+  späť a overím to grepom. Na záver commit, push nie.
+
+> doobotoval
+
+● Bash(ADB="$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"; "$ADB" devices;
+      "$ADB" -s emulator-5554 shell getprop sys.boot_completed; cd
+      "/c/Users/prima/Desktop/Sko…)
+  ⎿  (No output)
+
+● Flutter emulátor vidí (emulator-5554, Android 16). Moje adb ho síce stále
+  hlási ako „offline“, ale Flutter pravdepodobne používa iný adb, takže
+  pokračujem cez flutter run.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && flutter run -d emulator-5554 >
+      "C:/Users/prima/AppData/Local/Temp/claude…)
+  ⎿  Running in the background (↓ to manage)
+
+● Bash(LOG="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Desktop-Skol
+      a-3rd-year-mobilne-aplikacie-cvicenia-cv8/43d16d61-ee5a-4bc2-a91d-d5609b98
+      656f/scratchp…)
+  ⎿  (No output)
+  ⎿  (timeout 10m)
+
+● Background command "Run the app on the Android emulator, logging output"
+failed with exit code 1
+
+● Inštalácia zlyhala, lebo zariadenie sa ešte spúšťa, takže najprv zistím, ktorý
+  adb používa Flutter, a počkám na sys.boot_completed=1.
+
+● Bash(echo "ANDROID_HOME=$ANDROID_HOME ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT";
+      flutter config --list 2>/dev/null | grep -i android; powershell -NoProfile
+      -Command "Get-P…)
+  ⎿  (No output)
+
+● Bash(ADB="$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"; for i in $(seq 1
+      100); do b=$("$ADB" -s emulator-5554 shell getprop sys.boot_completed
+      2>/dev/null | tr…)
+  ⎿  (No output)
+  ⎿  (timeout 5m 30s)
+
+● Monitor "emulator boot status or errors" stream ended
+
+● Background command "Wait until emulator boot completes or qemu exits"
+completed (exit code 0)
+
+● Emulátor je pripravený. Spúšťam aplikáciu.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && flutter run -d emulator-5554 >
+      "C:/Users/prima/AppData/Local/Temp/claude…)
+  ⎿  Running in the background (↓ to manage)
+
+● Bash(LOG="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Desktop-Skol
+      a-3rd-year-mobilne-aplikacie-cvicenia-cv8/43d16d61-ee5a-4bc2-a91d-d5609b98
+      656f/scratchp…)
+  ⎿  (No output)
+  ⎿  (timeout 10m)
+
+> how much left pls
+● Zostáva už len pár minút. Aplikácia beží na emulátore, teraz nasnímam zoznam.
+  Potom chybový stav (dočasne URL na 503, potom späť), kontrolu oboch obrázkov a
+  commit.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && mkdir -p screenshots && flutter
+      screenshot -d emulator-5554 -o screensho…)
+  ⎿  1 file changed (binary, mode only or too large to show)
+  ⎿  (timeout 1m)
+
+  Read 1 file (ctrl+o to expand)
+
+● Zoznam sa načítal (10 receptov), ale obrázky ešte nie sú zobrazené: nevidno
+  ani obrázok, ani náhradnú ikonu, čiže sa stále sťahujú. Pozriem log a
+  obrazovku nasnímam znova.
+
+● Bash(LOG="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Desktop-Skol
+      a-3rd-year-mobilne-aplikacie-cvicenia-cv8/43d16d61-ee5a-4bc2-a91d-d5609b98
+      656f/scratchp…)
+  ⎿  (No output)
+
+● V logu nie sú chyby obrázkov, sieť funguje, emulátor je len pomalý (preskočené
+  snímky). Nasnímam znova.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && flutter screenshot -d emulator-5554
+      -o screenshots/etapa1_zoznam.png 2>&…)
+  ⎿  1 file changed (binary, mode only or too large to show)
+  ⎿  (timeout 1m)
+
+  Read 1 file (ctrl+o to expand)
+
+● Screenshot zoznamu je v poriadku: 10 receptov s obrázkami, kuchyňou, časom a
+  hodnotením. Teraz DOČASNE prepnem URL na /http/503 a aplikáciu spustím nanovo.
+
+● Update(recipe_app\lib\services\recipe_api.dart)
+  ⎿  Added 1 line, removed 2 lines
+      16  
+      17  /// The only class that knows the URL and the JSON format.
+      18  class RecipeApi {
+      19 -  static const _url =                                          
+      20 -      'https://dummyjson.com/recipes?limit=10&select=name,image
+         -,cuisine,prepTimeMinutes,rating';                              
+      19 +  static const _url = 'https://dummyjson.com/http/503';        
+      20  
+      21    Future<List<Recipe>> fetchRecipes() async {
+      22      final http.Response response;
+
+● Stop Task
+  ⎿  cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+     aplikacie/cvicenia/cv8/recipe_app" && flutter run -d emulator-5554 >
+     "C:/Users/prima/AppData/Local/Temp/claude… · stopped
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && flutter run -d emulator-5554 >
+      "C:/Users/prima/AppData/Local/Temp/claude…)
+  ⎿  Running in the background (↓ to manage)
+
+● Bash(LOG="C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Desktop-Skol
+      a-3rd-year-mobilne-aplikacie-cvicenia-cv8/43d16d61-ee5a-4bc2-a91d-d5609b98
+      656f/scratchp…)
+  ⎿  (No output)
+  ⎿  (timeout 10m)
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && flutter screenshot -d emulator-5554
+      -o screenshots/etapa1_chyba.png 2>&1…)
+  ⎿  1 file changed (binary, mode only or too large to show)
+  ⎿  (timeout 1m)
+
+  Read 1 file (ctrl+o to expand)
+
+● Toto je ešte stav načítavania, vidno začiatok CircularProgressIndicator
+  (zároveň dôkaz, že spinner funguje). Odpoveď 503 ešte neprišla, takže
+  obrazovku nasnímam znova.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && flutter screenshot -d emulator-5554
+      -o screenshots/etapa1_chyba.png 2>&1…)
+  ⎿  1 file changed (binary, mode only or too large to show)
+  ⎿  (timeout 1m)
+
+● Background command "Relaunch the app with the temporary 503 URL" completed
+(exit code 0)
+
+● Snímanie zlyhalo pri adb pull a zároveň sa ukončil flutter run. Pozriem, či
+  emulátor nespadol.
+
+● Bash(ADB="$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"; "$ADB" devices;
+      tail -5 "C:/Users/prima/AppData/Local/Temp/claude/c--Users-prima-Desktop-S
+      kola-3rd-year-…)
+  ⎿  (No output)
+
+● Krátky výpadok adb spojenia (Lost connection to device), emulátor je už späť a
+  aplikácia na ňom stále beží. Skúsim snímku znova.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" &&
+      ADB="$LOCALAPPDATA/Android/Sdk/platform-tools/adb.exe"; "$ADB" -s emulat…)
+  ⎿  (No output)
+  ⎿  (timeout 1m)
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && ls -la screenshots; flutter
+      screenshot -d emulator-5554 -o screenshots/e…)
+  ⎿  1 file changed (binary, mode only or too large to show)
+  ⎿  (timeout 1m)
+
+  Read 1 file (ctrl+o to expand)
+
+● Chybový stav je správny: slovenská správa „Server vrátil chybu 503“ aj
+  tlačidlo „Skúsiť znova“. Teraz URL VRACIAM späť a overujem to grepom.
+
+● Update(recipe_app\lib\services\recipe_api.dart)
+  ⎿  Added 2 lines, removed 1 line
+      16  
+      17  /// The only class that knows the URL and the JSON format.
+      18  class RecipeApi {
+      19 -  static const _url = 'https://dummyjson.com/http/503';        
+      19 +  static const _url =                                          
+      20 +      'https://dummyjson.com/recipes?limit=10&select=name,image
+         +,cuisine,prepTimeMinutes,rating';                              
+      21  
+      22    Future<List<Recipe>> fetchRecipes() async {
+      23      final http.Response response;
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && echo "grep http/503:"; grep -rn
+      "http/503" lib/ || echo "  (nic nenaslo…)  ⎿  (No output)
+  ⎿  (timeout 5m)
+
+● Odkaz vrátil URL a testy, analýza aj zdrojový kód sú v poriadku. Commit je
+  ďalší krok, git init netreba, lebo cv8 je už súčasťou cvicenia; najprv
+  skontrolujem, čo sa pridá.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && git status --short
+      --untracked-files=all . | grep -v -E "^\?\? (android|…)
+  ⎿  (No output)
+
+● Pridajú sa len zdrojové súbory a screenshoty, žiadny build/, .dart_tool ani
+  Kotlin sessions. Commitujem.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne
+      aplikacie/cvicenia/cv8/recipe_app" && git add . && git commit -q -m "U6
+      etapa 1…)
+  ⎿  (No output)
+
+● Etapa 1 je hotová a commitnutá ako 9ff30a7 U6 etapa 1. flutter analyze hlási
+  „No issues found!“ a URL je vrátená na /recipes (grep na http/503 v lib/ nič
+  nenašiel).
+
+  Kde to je: projekt som vytvoril v cv8/recipe_app/, rovnako ako predošlé
+  cvičenia (napr. cv7/weather_lab). git init nebol potrebný, lebo cv8 už patrí
+  do repozitára cvicenia. git add . pridal iba tento projekt, ostatné
+  nesledované priečinky (cv4, cv6, cv7, cv5/.vscode) ostali bokom.
+
+  Čo som spravil:
+  - Model: recipe.dart (recipe_app/lib/models/recipe.dart) obsahuje triedu
+    Recipe s factory Recipe.fromJson. Hodnotenie sa číta cez (json['rating'] as
+    num).toDouble().
+  - Komunikácia so serverom: recipe_api.dart
+    (recipe_app/lib/services/recipe_api.dart) obsahuje triedu RecipeApi. Je to
+    jediné miesto s URL a parsovaním JSON. Požiadavka má timeout 10 s a pri inom
+    stave ako 200 sa vyhodí výnimka. Chyby sa menia na slovenské správy (server
+    neodpovedá / chýba pripojenie / chyba 503).
+  - Obrazovka: recipe_list_page.dart
+    (recipe_app/lib/screens/recipe_list_page.dart) je StatefulWidget so stavom
+    _recipes, _loading a _error.
+    - Pri prvom načítaní sa ukáže CircularProgressIndicator, pri chybe správa a
+      tlačidlo „Skúsiť znova“.
+    - Pri obnove ostávajú staré dáta na obrazovke a nový zoznam ich nahradí až
+      po úspešnej odpovedi. Ak obnova zlyhá, staré dáta ostanú a chyba sa ukáže
+      v SnackBare.
+    - ListView má AlwaysScrollableScrollPhysics.
+    - Každý riadok je ListTile: zaoblený obrázok s náhradnou ikonou, podtitul
+      „kuchyňa • X min“ a vpravo hviezdička s hodnotením.
+  - Povolenia: pridal som INTERNET do AndroidManifest.xml a
+    com.apple.security.network.client do oboch macOS .entitlements.
+  - Testy: pôvodný test počítadla by po úpravách nefungoval, tak som ho nahradil
+    4 widget testmi s falošným API. Overujú spinner, chybový stav s opakovaním,
+    to, že staré dáta ostanú počas obnovy, aj SnackBar pri neúspešnej obnove.
+    Všetky prechádzajú.
+  - Screenshoty z Android emulátora som oba otvoril a skontroloval:
+    - screenshots/etapa1_zoznam.png: 10 receptov s obrázkami.
+    - screenshots/etapa1_chyba.png: „Server vrátil chybu 503. Skúste to neskôr.“
+      a tlačidlo „Skúsiť znova“.
+
+  Na emulátore je teraz nainštalovaná verzia s dočasnou adresou 503, takže po
+  otvorení ukáže chybu. Kód v repozitári je už správny, stačí aplikáciu spustiť
+  znova cez flutter run.
+
+  Push som nerobil. Mám pushnúť?
+
+> premiestni do lokalneho git repo tento projekt do MP ako u6
+
+● Najprv nájdem lokálny repozitár „MP“.
+
+● Bash(cd /c/Users/prima && find Desktop Documents source repos "Desktop/Skola"
+      -maxdepth 5 -type d -iname "MP" 2>/dev/null | head; ls
+      "/c/Users/prima/Desktop/Skola/3r…)
+  ⎿  (No output)
+
+● PowerShell($roots = @("$env:USERPROFILE", "D:\", "E:\") | Where-Object {
+            Test-Path $_ }
+            foreach ($r in $roots) { Get-ChildItem -Path $r -Directory -Recurse
+            -Depth 5 -Error…)
+  ⎿  C:\Users\prima\Desktop\Skola\3rd year\mpj
+     C:\Users\prima\Downloads\https%3a%2f%2fmirrors.163.com%2fcygwin%2f\x86
+     _64\release\mpfr
+  ⎿  (timeout 3m)
+
+● Priečinok s názvom „MP“ som nenašiel (je tam len 3rd year\mpj). Vyhľadám
+  všetky lokálne git repozitáre a pozriem ich názvy aj remote adresy.
+
+● PowerShell(Get-ChildItem -Path "$env:USERPROFILE" -Directory -Recurse -Depth 6
+            -Force -ErrorAction SilentlyContinue -Filter ".git" | Where-Object
+            { $_.FullName -notmatch "…)
+  ⎿  Error: Exit code 255
+     C:\Users\prima\.claude\plugins\cache\claude-plugins-official\figma\2.2.157
+     |  origin   https://github.com/figma/mcp-server-guide.git (fetch)
+     C:\Users\prima\.codex\.tmp\plugins  |
+     C:\Users\prima\Desktop\Skola\1st year\2 semester\Pokrocile internetove
+     technologie\PIT  |  origin
+     https://github.com/AleksandraTalyzina/PIT.git (fetch)
+     C:\Users\prima\Desktop\Skola\3rd year\mobilne aplikacie\cvicenia  |
+     C:\Users\prima\Desktop\Skola\3rd year\umela inteligencia  |
+     C:\Users\prima\Desktop\работа\Ifocus\astro\kingstonstables-small  |  origin
+         https://github.com/ifocus-sk/kingstonstables-small.git (fetch)
+     C:\Users\prima\Desktop\работа\Ifocus\weby\ifocus swiss  |
+     C:\Users\prima\Desktop\работа\Ifocus\weby\la-musica ifocus\la-musica  |
+     origin https://github.com/AleksandraTalyzina/La-musica.git (fetch)
+     C:\Users\prima\Desktop\работа\Ifocus\weby\la-musica ifocus\la-musica - Copy
+     (2)  |  origin      https://github.com/AleksandraTalyzina/La-musica.git
+     (fetch)
+
+     … +10 lines (ctrl+o to expand)
+  ⎿  Interrupted · What should Claude do instead?
+  ⎿  [Image #1]
+
+> sem do uloh
+
+● Cieľ je Documents\GitHub\mt_2026_talyzina\ulohy\u6. Najprv sa pozriem, ako sú
+  v ulohy usporiadané ostatné úlohy, aký je .gitignore a v akom stave je
+  repozitár.
+
+● Bash(cd "/c/Users/prima/Documents/GitHub/mt_2026_talyzina" && git status
+      --short | head -20; echo "--- branch"; git branch -vv; echo "--- log"; git
+      log --oneline -8;…)
+  ⎿  Error: Exit code 1
+     --- branch
+     * main 2ea7799 [origin/main] -
+     --- log
+     2ea7799 -
+     88d14d9 u4
+     824baba u3
+     71d4236 Create .gitkeep
+     42fb0f2 Update README.md
+     2c27e5d Add files via upload
+     … +89 lines (ctrl+o to expand)
+
+● Repozitár je čistý a synchronizovaný s origin/main, ale u3 až u5 obsahujú len
+  main.dart, screenshoty a popis.md. Pozriem README, či predpisuje, čo má byť v
+  priečinku úlohy.
+
+● Bash(cd "/c/Users/prima/Documents/GitHub/mt_2026_talyzina" && cat README.md;
+      echo "=== ulohy/README.md"; cat ulohy/README.md; echo "=== u5/popis.md
+      (head)"; head -30…)
+  ⎿  (No output)
+
+● Úlohy sú voľnej formy, takže celý projekt prenesiem do ulohy/u6, len bez
+  flutterovského README.md, ktorý by kolidoval so šablónou. Prenesiem iba súbory
+  sledované v gite, bez build/ a .dart_tool/.
+
+● Bash(MP="/c/Users/prima/Documents/GitHub/mt_2026_talyzina";
+      SRC="/c/Users/prima/Desktop/Skola/3rd year/mobilne aplikacie/cvicenia";
+      git -C "$MP" remote -v; ls -d "$M…)
+  ⎿  No matches found
+
+● Bash(MP="/c/Users/prima/Documents/GitHub/mt_2026_talyzina";
+      SRC="/c/Users/prima/Desktop/Skola/3rd year/mobilne aplikacie/cvicenia";
+      mkdir "$MP/ulohy/u6" && git -C "$…)
+  ⎿  No matches found
+
+● Skopírovaných je 134 súborov, žiadny nekoliduje s .gitignore v MP. Overím, že
+  projekt v novom umiestnení funguje.
+
+● Bash(cd "/c/Users/prima/Documents/GitHub/mt_2026_talyzina/ulohy/u6" && flutter
+      pub get 2>&1 | tail -1 && flutter analyze && flutter test 2>&1 | tail -1;
+      grep -rn "ht…)
+  ⎿  (No output)
+  ⎿  (timeout 5m)
+
+● V novom umiestnení všetko funguje: analyze bez chýb, 4/4 testy prešli, URL je
+  správna. Commitujem do MP (bez pushu).
+
+● Bash(cd "/c/Users/prima/Documents/GitHub/mt_2026_talyzina" && git add ulohy/u6
+      && git status --short | grep -v "^A  ulohy/u6/" ; git commit -q -m "U6
+      etapa 1…)
+  ⎿  (No output)
+
+● Commit f87881e je v MP a pracovný strom je čistý, takže odstránim pôvodnú
+  kópiu v cvicenia/cv8; v commite 9ff30a7 ju možno kedykoľvek obnoviť.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne aplikacie/cvicenia" &&
+      git rm -r -q cv8/recipe_app && rm -rf cv8/recipe_app; ls -A cv8; git
+      status --short | h…)
+  ⎿  Deleted recipe_app\.gitignore (+0 -48)
+       1 -# Miscellaneous                                                
+       2 -*.class                                                        
+       3 -*.log                                                          
+       4 -*.pyc                                                          
+       5 -*.swp                                                          
+       6 -.DS_Store                                                      
+       7 -.atom/                                                         
+       8 -.build/                                                        
+       9 -.buildlog/                                                     
+      10 -.history                                                       
+      11 -.svn/                                                          
+      12 -.swiftpm/                                                      
+      13 -migrate_working_dir/                                           
+      14 -                                                               
+      15 -# IntelliJ related                                             
+      16 -*.iml                                                          
+      17 -*.ipr                                                          
+      18 -*.iws                                                          
+      19 -.idea/                                                         
+      20 -                                                               
+      21 -# The .vscode folder contains launch configuration and tasks yo
+         -u configure in                                                 
+      22 -# VS Code which you may wish to be included in version control,
+         - so this line                                                  
+      23 -# is commented out by default.                                 
+      24 -#.vscode/                                                      
+      25 -                                                               
+      26 -# Flutter/Dart/Pub related                                     
+      27 -**/doc/api/                                                    
+      28 -**/ios/Flutter/.last_build_id                                  
+      29 -.dart_tool/                                                    
+      30 -.flutter-plugins-dependencies                                  
+      31 -.pub-cache/                                                    
+      32 -.pub/                                                          
+      33 -/build/                                                        
+      34 -/coverage/                                                     
+      35 -                                                               
+      36 -# Symbolication related                                        
+      37 -app.*.symbols                                                  
+      38 -                                                               
+      39 -# Obfuscation related                                          
+      40 -app.*.map.json                                                 
+     … 8 more lines (ctrl+o to expand)
+  ⎿  Deleted recipe_app\.metadata (+0 -45)
+       1 -# This file tracks properties of this Flutter project.         
+       2 -# Used by Flutter tool to assess capabilities and perform upgra
+         -des etc.                                                       
+       3 -#                                                              
+       4 -# This file should be version controlled and should not be manu
+         -ally edited.                                                   
+       5 -                                                               
+       6 -version:                                                       
+       7 -  revision: "abaf9c523780a608bd46686fd5e53740a07077f8"         
+       8 -  channel: "stable"                                            
+       9 -                                                               
+      10 -project_type: app                                              
+      11 -                                                               
+      12 -# Tracks metadata for the flutter migrate command              
+      13 -migration:                                                     
+      14 -  platforms:                                                   
+      15 -    - platform: root                                           
+      16 -      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      17 -      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      18 -    - platform: android                                        
+      19 -      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      20 -      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      21 -    - platform: ios                                            
+      22 -      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      23 -      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      24 -    - platform: linux                                          
+      25 -      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      26 -      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      27 -    - platform: macos                                          
+      28 -      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      29 -      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      30 -    - platform: web                                            
+      31 -      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      32 -      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      33 -    - platform: windows                                        
+      34 -      create_revision: abaf9c523780a608bd46686fd5e53740a07077f8
+      35 -      base_revision: abaf9c523780a608bd46686fd5e53740a07077f8  
+      36 -                                                               
+      37 -  # User provided section                                      
+      38 -                                                               
+      39 -  # List of Local paths (relative to this file) that should be 
+      40 -  # ignored by the migrate tool.                               
+     … 5 more lines (ctrl+o to expand)
+  ⎿  Deleted recipe_app\README.md (+0 -17)
+       1 -# recipe_app                                                   
+       2 -                                                               
+       3 -A new Flutter project.                                         
+       4 -                                                               
+       5 -## Getting Started                                             
+       6 -                                                               
+       7 -This project is a starting point for a Flutter application.    
+       8 -                                                               
+       9 -A few resources to get you started if this is your first Flutte
+         -r project:                                                     
+      10 -                                                               
+      11 -- [Learn Flutter](https://docs.flutter.dev/get-started/learn-fl
+         -utter)                                                         
+      12 -- [Write your first Flutter app](https://docs.flutter.dev/get-s
+         -tarted/codelab)                                                
+      13 -- [Flutter learning resources](https://docs.flutter.dev/referen
+         -ce/learning-resources)                                         
+      14 -                                                               
+      15 -For help getting started with Flutter development, view the    
+      16 -[online documentation](https://docs.flutter.dev/), which offers
+         - tutorials,                                                    
+      17 -samples, guidance on mobile development, and a full API referen
+         -ce.                                                            
+  ⎿  Deleted recipe_app\analysis_options.yaml (+0 -38)
+       1 -# This file configures the analyzer, which statically analyzes 
+         -Dart code to                                                   
+       2 -# check for errors, warnings, and lints.                       
+       3 -#                                                              
+       4 -# The issues identified by the analyzer are surfaced in the UI 
+         -of Dart-enabled                                                
+       5 -# IDEs (https://dart.dev/tools#ides-and-editors). The analyzer 
+         -can also be                                                    
+       6 -# invoked from the command line by running `flutter analyze`.  
+       7 -                                                               
+       8 -# The following line activates a set of recommended lints for F
+         -lutter apps,                                                   
+       9 -# packages, and plugins designed to encourage good coding pract
+         -ices.                                                          
+      10 -include: package:flutter_lints/flutter.yaml                    
+      11 -                                                               
+      12 -analyzer:                                                      
+      13 -  exclude:                                                     
+      14 -    - build/**                                                 
+      15 -    - android/**                                               
+      16 -    - ios/**                                                   
+      17 -    - web/**                                                   
+      18 -    - windows/**                                               
+      19 -    - macos/**                                                 
+      20 -    - linux/**                                                 
+      21 -                                                               
+      22 -linter:                                                        
+      23 -  # The lint rules applied to this project can be customized in
+         - the                                                           
+      24 -  # section below to disable rules from the `package:flutter_li
+         -nts/flutter.yaml`                                              
+      25 -  # included above or to enable additional rules. A list of all
+         - available lints                                               
+      26 -  # and their documentation is published at https://dart.dev/li
+         -nts.                                                           
+      27 -  #                                                            
+      28 -  # Instead of disabling a lint rule for the entire project in 
+         -the                                                            
+      29 -  # section below, it can also be suppressed for a single line 
+         -of code                                                        
+      30 -  # or a specific dart file by using the `// ignore: name_of_li
+         -nt` and                                                        
+      31 -  # `// ignore_for_file: name_of_lint` syntax on the line or in
+         - the file                                                      
+      32 -  # producing the lint.                                        
+      33 -  rules:                                                       
+      34 -    # avoid_print: false  # Uncomment to disable the `avoid_pri
+         -nt` rule                                                       
+      35 -    # prefer_single_quotes: true  # Uncomment to enable the `pr
+         -efer_single_quotes` rule                                       
+      36 -                                                               
+      37 -# Additional information about this file can be found at       
+      38 -# https://dart.dev/guides/language/analysis-options            
+  ⎿  Deleted recipe_app\android\.gitignore (+0 -14)
+       1 -gradle-wrapper.jar                                             
+       2 -/.gradle                                                       
+       3 -/captures/                                                     
+       4 -/gradlew                                                       
+       5 -/gradlew.bat                                                   
+       6 -/local.properties                                              
+       7 -GeneratedPluginRegistrant.java                                 
+       8 -.cxx/                                                          
+       9 -                                                               
+      10 -# Remember to never publicly share your keystore.              
+      11 -# See https://flutter.dev/to/reference-keystore                
+      12 -key.properties                                                 
+      13 -**/*.keystore                                                  
+      14 -**/*.jks                                                       
+  ⎿  … 130 more files changed
+● Priečinok recipe_app drží otvorený nejaký proces (pravdepodobne Gradle/Kotlin
+  daemon z buildu). Pozriem, čo v ňom zostalo.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne aplikacie/cvicenia/cv8"
+      && find recipe_app | head -20; find recipe_app -type f | wc -l)
+  ⎿  (No output)
+
+● Zostal len prázdny priečinok, ktorý drží otvorený iný proces. Skúsim ho zmazať
+  ešte cez PowerShell.
+
+● PowerShell(try { Remove-Item -LiteralPath "C:\Users\prima\Desktop\Skola\3rd
+            year\mobilne aplikacie\cvicenia\cv8\recipe_app" -Force -ErrorAction
+            Stop; "zmazane" } catch { "…)
+  ⎿  stale zamknute: The process cannot access the file 'C:\Users\prima\Des
+     ktop\Skola\3rd year\mobilne aplikacie\cvicenia\cv8\recipe_app' because
+      it is being used by another process.
+
+● Prázdny priečinok git nesleduje a dá sa zmazať neskôr, keď ho proces uvoľní.
+  Odstránenie z cvicenia commitnem, aby tam nezostali visieť rozpracované zmeny.
+
+● Bash(cd "/c/Users/prima/Desktop/Skola/3rd year/mobilne aplikacie/cvicenia" &&
+      git commit -q -m "Move U6 to mt_2026_talyzina/ulohy/u6…)
+  ⎿  (No output)
+
+● Projekt je presunutý do Documents\GitHub\mt_2026_talyzina\ulohy\u6. Aj tam
+  flutter analyze hlási „No issues found!“, všetky 4 testy prechádzajú a URL
+  ukazuje na /recipes.
+
+  - MP repozitár: projekt je commitnutý ako f87881e U6 etapa 1 (134 súborov
+    vrátane screenshots/). Pushnuté nie je.
+  - Pôvodná kópia: z cvicenia/cv8 som ju odstránil commitom 283458b. Ostáva v
+    histórii v 9ff30a7, takže sa dá obnoviť.
+  - Zvyšok v cv8: ostal prázdny priečinok cv8/recipe_app. Drží ho otvorený iný
+    proces, pravdepodobne VS Code alebo Gradle daemon. Git ho nevidí, stačí ho
+    neskôr zmazať ručne.
+  - README.md: vygenerovaný README.md z Fluttera som do u6 nedal. Šablóna
+    predmetu tam neskôr pridá vlastný ulohy/u6/README.md so zadaním, ktorý sa
+    nemá meniť. Pri merge template/main by inak vznikol konflikt.
+
+  Hlavné README v MP vyžaduje pri každej aktivite popis použitia LLM. V u5 ste
+  to riešili cez popis.md a historia-promptov.txt, v u6 zatiaľ nič také nie je.
+  Môžem pripraviť popis.md v rovnakom štýle ako pri u5.
+
+  Mám pushnúť MP na origin?
+
+> ano commit
+
+● „Áno, commit“ chápem tak, že mám pripraviť popis.md a commitnúť ho. Push
+  zatiaľ nerobím, ten som nevidel výslovne povolený. Najprv si celý pozriem
+  popis.md z u5, aby mal rovnaký štýl.
+
+● Bash(cd "/c/Users/prima/Documents/GitHub/mt_2026_talyzina/ulohy/u5" && sed -n
+      30,200p popis.md; echo; echo "=== historia head"; head -c 600
+      historia-promptov.txt)
+  ⎿  (No output)
+
+● Pripravím popis.md v štýle u5 a commitnem ho do MP.
+
+● Write(~\Documents\GitHub\mt_2026_talyzina\ulohy\u6\popis.md)
+  ⎿  Wrote 107 lines to
+     ~\Documents\GitHub\mt_2026_talyzina\ulohy\u6\popis.md
+       1 # U6 – Etapa 1: Zoznam receptov
+       2
+       3 Aplikácia stiahne prvých 10 receptov z [DummyJSON](https://dummy
+         json.com/docs/recipes) (bez API kľúča)
+       4 a pri každom ukáže obrázok, názov, kuchyňu, čas prípravy a hodno
+         tenie.
+       5
+       6 ## Súbory
+       7
+       8 | Súbor | Obsah |
+     … +99 lines (ctrl+o to expand)
+
+● Bash(cd "/c/Users/prima/Documents/GitHub/mt_2026_talyzina" && git add
+      ulohy/u6/popis.md && git commit -q -m "U6 etapa 1: popis…)
+  ⎿  (No output)
+
+● Pridal som popis.md
+  (../../../../../Documents/GitHub/mt_2026_talyzina/ulohy/u6/popis.md) do
+  ulohy/u6 a commitol ho ako bce0cf8 U6 etapa 1: popis. Je v rovnakom štýle ako
+  popis u5. Lokálny main je teraz o 2 commity pred origin/main a pracovný strom
+  je čistý. Push som nerobil.
+
+  V popise ešte chýbajú dve veci, ktoré README predmetu vyžaduje a ktoré nemôžem
+  doplniť za teba:
+  - História promptov: v u5 bola ako historia-promptov.txt. Exportuješ ju
+    príkazom /export v Claude Code a uložíš do ulohy/u6/.
+  - Vlastné úpravy: README chce aj popis toho, čo si upravil(a) sám/sama. To som
+    do popisu nevymýšľal, treba to dopísať.
+
+  Mám pushnúť na origin?

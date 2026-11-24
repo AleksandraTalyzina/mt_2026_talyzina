@@ -1,0 +1,21 @@
+00:00 +0: loading C:/Users/prima/Documents/GitHub/mt_2026_talyzina/ulohy/u6/integration_test/search_race_test.dart
+Building Windows application...                                    68.7s
+√ Built build\windows\x64\runner\Debug\recipe_app.exe
+00:00 +0: fast typing shows only results of the last query
+[SEARCH] 11:45:59.951  #1 →  q=""           delay=-
+[SEARCH] 11:46:01.081  #1 ←  q=""           10 výsledkov ZOBRAZENÉ
+[SEARCH] 11:46:02.378  #2 →  q="p"          delay=1317 ms
+[SEARCH] 11:46:02.863  #3 →  q="pa"         delay=552 ms
+[SEARCH] 11:46:03.316  #4 →  q="pas"        delay=931 ms
+[SEARCH] 11:46:03.748  #5 →  q="chick"      delay=235 ms
+[SEARCH] 11:46:03.902  #2 ←  q="p"          23 výsledkov ZAHODENÉ (aktuálna je #5)
+[SEARCH] 11:46:04.173  #5 ←  q="chick"      10 výsledkov ZOBRAZENÉ
+[SEARCH] 11:46:04.178  #6 →  q="chicken"    delay=804 ms
+[SEARCH] 11:46:04.456  #3 ←  q="pa"         8 výsledkov ZAHODENÉ (aktuálna je #6)
+[SEARCH] 11:46:04.819  #4 ←  q="pas"        3 výsledky ZAHODENÉ (aktuálna je #6)
+[SEARCH] 11:46:05.080  #6 ←  q="chicken"    8 výsledkov ZOBRAZENÉ
+[SEARCH] zobrazené: Chicken Alfredo Pasta, Mango Salsa Chicken, Chicken Biryani, Chicken Karahi, Butter Chicken (Murgh Makhani), Mexican Chicken Enchiladas, Teriyaki Chicken Stir-Fry, Hawaiian Chicken Skewers
+[SEARCH] 11:46:08.698  #7 →  q="xyzqwe"     delay=2504 ms
+[SEARCH] 11:46:11.300  #7 ←  q="xyzqwe"     0 výsledkov ZOBRAZENÉ
+00:12 +1: (tearDownAll)
+00:12 +1: All tests passed!

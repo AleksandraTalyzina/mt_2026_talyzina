@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../models/recipe.dart';
 import '../services/recipe_api.dart';
+import '../services/search_log.dart';
 
 class RecipeListPage extends StatefulWidget {
   const RecipeListPage({super.key, required this.api});
@@ -13,7 +16,13 @@ class RecipeListPage extends StatefulWidget {
 }
 
 class _RecipeListPageState extends State<RecipeListPage> {
+  final _searchController = TextEditingController();
+  Timer? _debounce;
+  String _query = ''; // trimmed text that is being searched
+  int _requestCounter = 0; // id of the newest request
+
   List<Recipe>? _recipes;
+  String _resultsQuery = ''; // query that _recipes belong to
   bool _loading = true;
   String? _error;
 
@@ -23,36 +32,139 @@ class _RecipeListPageState extends State<RecipeListPage> {
     _load();
   }
 
-  // used for the first load, "Skúsiť znova" and pull-to-refresh
+  @override
+  void dispose() {
+    _debounce?.cancel();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String text) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      _query = text.trim();
+      _load();
+    });
+  }
+
+  void _clearSearch() {
+    _debounce?.cancel();
+    _searchController.clear();
+    _query = '';
+    _load();
+  }
+
+  // used for the first load, searching, "Skúsiť znova" and pull-to-refresh
   Future<void> _load() async {
+    final id = ++_requestCounter;
+    final query = _query;
     setState(() {
       _loading = true;
       _error = null;
     });
     try {
-      final recipes = await widget.api.fetchRecipes();
+      final recipes = await widget.api.fetchRecipes(
+        query: query,
+        requestId: id,
+      );
       if (!mounted) return;
+      // a newer request was sent meanwhile -> this answer is too old
+      if (id != _requestCounter) {
+        logSearch(
+          id,
+          '←',
+          query,
+          '${countResults(recipes.length)} ZAHODENÉ (aktuálna je #$_requestCounter)',
+        );
+        return;
+      }
+      logSearch(id, '←', query, '${countResults(recipes.length)} ZOBRAZENÉ');
       // the old list is replaced only after a successful response
-      setState(() => _recipes = recipes);
+      setState(() {
+        _recipes = recipes;
+        _resultsQuery = query;
+        _loading = false;
+      });
     } catch (e) {
       if (!mounted) return;
-      if (_recipes == null) {
-        setState(() => _error = '$e');
-      } else {
-        // refresh failed -> keep the old data, just tell the user
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Obnova zlyhala. $e')));
+      if (id != _requestCounter) {
+        logSearch(
+          id,
+          '←',
+          query,
+          'chyba ZAHODENÉ (aktuálna je #$_requestCounter)',
+        );
+        return;
       }
-    } finally {
-      if (mounted) setState(() => _loading = false);
+      logSearch(id, '←', query, 'chyba ZOBRAZENÉ: $e');
+      setState(() {
+        _loading = false;
+        if (_recipes == null) _error = '$e';
+      });
+      if (_recipes != null) {
+        // keep the old data, just tell the user
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Načítanie zlyhalo. $e')));
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Recepty')),
-      body: _buildBody(),
+      appBar: AppBar(
+        title: const Text('Recepty'),
+        actions: [
+          const Text('Pomalá sieť'),
+          Tooltip(
+            message: 'Náhodné oneskorenie 0–3 s pri každej požiadavke',
+            child: Switch(
+              key: const Key('slowNetworkSwitch'),
+              value: widget.api.slowNetwork,
+              onChanged: (value) {
+                setState(() => widget.api.slowNetwork = value);
+              },
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+            child: ValueListenableBuilder(
+              valueListenable: _searchController,
+              builder: (context, value, child) => TextField(
+                key: const Key('searchField'),
+                controller: _searchController,
+                onChanged: _onSearchChanged,
+                textInputAction: TextInputAction.search,
+                decoration: InputDecoration(
+                  hintText: 'Hľadať recept',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: value.text.isEmpty
+                      ? null
+                      : IconButton(
+                          icon: const Icon(Icons.clear),
+                          tooltip: 'Vymazať',
+                          onPressed: _clearSearch,
+                        ),
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ),
+          ),
+          // old results stay visible, a thin bar shows that a request runs
+          SizedBox(
+            height: 4,
+            child: _loading && _recipes != null
+                ? const LinearProgressIndicator()
+                : null,
+          ),
+          Expanded(child: _buildBody()),
+        ],
+      ),
     );
   }
 
@@ -61,12 +173,18 @@ class _RecipeListPageState extends State<RecipeListPage> {
     if (recipes != null) {
       return RefreshIndicator(
         onRefresh: _load,
-        child: ListView.builder(
-          // pull-to-refresh works even when the list is short
-          physics: const AlwaysScrollableScrollPhysics(),
-          itemCount: recipes.length,
-          itemBuilder: (context, index) => RecipeTile(recipe: recipes[index]),
-        ),
+        child: recipes.isEmpty
+            ? ListView(
+                // pull-to-refresh works even with nothing in the list
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [EmptyView(query: _resultsQuery)],
+              )
+            : ListView.builder(
+                physics: const AlwaysScrollableScrollPhysics(),
+                itemCount: recipes.length,
+                itemBuilder: (context, index) =>
+                    RecipeTile(recipe: recipes[index]),
+              ),
       );
     }
     if (_loading) {
@@ -106,6 +224,32 @@ class RecipeTile extends StatelessWidget {
           const Icon(Icons.star, color: Colors.amber, size: 20),
           const SizedBox(width: 4),
           Text(recipe.rating.toStringAsFixed(1)),
+        ],
+      ),
+    );
+  }
+}
+
+class EmptyView extends StatelessWidget {
+  const EmptyView({super.key, required this.query});
+
+  final String query;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 64, 24, 24),
+      child: Column(
+        children: [
+          const Icon(Icons.search_off, size: 64),
+          const SizedBox(height: 16),
+          Text(
+            query.isEmpty
+                ? 'Nenašiel sa žiadny recept.'
+                : 'Pre „$query“ sa nenašiel žiadny recept.',
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
